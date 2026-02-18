@@ -1,10 +1,10 @@
 <section class = "login">
   <div class="header">
-    <img src="monitexB.png">
+    <img src="monitex.png">
   </div>
   <div class="login-card">
       <div class = "login-image">
-    <img src ="smart_home3_r`.png">
+    <img src ="smart_home3.png">
   </div>
 
     <div class="login-form">
@@ -22,12 +22,31 @@
       <div class="options">
         <label>
           <input type="checkbox" class ="">
-          <span class="checkmark"><i class="fa-utility-duo fa-semibold fa-circle-check"></i></span>
+          <span class="checkmark"><i class="fa-utility-duo fa-s`emibold fa-circle-check"></i></span>
           Remember Me
         </label>
         <a href="#">Forget Password?</a>
       </div>
       <button class = "login-btn">Login</button>
+      <app-divider [message]="'OR Login With'"></app-divider>
+      <div class="social-login">
+        <button class="social-btn google">
+          <i class="fab fa-google"></i>
+        </button>
+
+        <button class="social-btn github">
+          <i class="fab fa-github"></i>
+        </button>
+        <button class="social-btn microsoft">
+          <i class="fab fa-microsoft">
+          </i>
+        </button>
+      </div>
+      <div class="register-link">
+        <span>Don't have an account?</span>
+        <a href="#">Register</a>
+      </div>
+
     </div>
   </div>
 </section>

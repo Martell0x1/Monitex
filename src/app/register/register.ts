@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { Divider } from '../divider/divider';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   imports: [Divider],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  templateUrl: './register.html',
+  styleUrl: './register.css',
 })
-export class Login {
+export class Register {
 
 }
