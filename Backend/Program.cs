@@ -7,6 +7,10 @@ using SmartHome.Middlewares;
 using SmartHome.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(opts =>
+{
+  opts.ListenAnyIP(5020);
+});
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["key"]);
 
@@ -18,7 +22,7 @@ builder.Services.AddScoped<IAuthService , AuthService>();
 builder.Services.AddAuthentication(ops =>
 {
    ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-   ops.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
+   ops.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(ops =>
 {
@@ -36,7 +40,15 @@ builder.Services.AddAuthentication(ops =>
 });
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
-
+builder.Services.AddCors(opts =>
+{
+  opts.AddPolicy("AllowAngular", policy =>
+  {
+    policy.WithOrigins("*")
+      .AllowAnyHeader()
+      .AllowAnyMethod();
+  });
+});
 
 
 var app = builder.Build();
@@ -45,5 +57,5 @@ app.UseRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+app.UseCors("AllowAngular");
 app.Run();
