@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monitex Live Dashboard</title>
+</head>
+
+<body>
+
+<h2>Live Sensor Readings</h2>
+
+<ul id="readings"></ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+<script>
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("http://localhost:5020/sensorHub")
+    .build();
+
+connection.on("ReceiveSensorReading", data => {
+    const li = document.createElement("li");
+    li.textContent = data;
+
+    document
+        .getElementById("readings")
+        .appendChild(li);
+});
+
+connection.start()
+    .then(() => console.log("Connected to SignalR"))
+    .catch(err => console.error(err));
+</script>
+
+</body>
+</html>

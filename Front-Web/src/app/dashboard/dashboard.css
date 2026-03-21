@@ -1,0 +1,119 @@
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.dashboard{
+  display:flex;
+  height:100vh;
+  background:#2d3250;
+}
+
+
+.sidebar{
+  width: 220px;
+  background:#424769;
+  color:white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: 0.3s;
+}
+
+.sidebar a{
+  text-decoration:none;
+  color:#cbd5e1;
+  margin:15px 0;
+  font-size:18px;
+  transition:0.2s;
+}
+
+.sidebar a:hover{
+  color:#f4a261;
+  transform: translateX(4px);
+}
+
+.logo{
+  margin-bottom:40px;
+  cursor: pointer;
+  color:#f4a261;
+}
+
+.sidebar.collapsed{
+  width:0;
+  padding:0;
+  overflow:hidden;
+}
+
+
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+
+.topbar{
+  height:60px;
+  background:#424769;
+  display:flex;
+  align-items:center;
+  padding:0 20px;
+  color:white;
+  box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+#menu-toggle{
+  font-size:22px;
+  margin-right:20px;
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+#menu-toggle:hover{
+  color:#f4a261;
+}
+
+
+.dashboard-body{
+  display: grid;
+  padding: 30px;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+}
+
+
+/* SENSOR CARDS */
+
+.sensor-card{
+  background:#424769;
+  padding:20px;
+  border-radius:12px;
+  color:white;
+
+  box-shadow:
+  rgba(0, 0, 0, 0.16) 0px 10px 36px,
+  rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+
+  transition:0.25s;
+}
+
+.sensor-card:hover{
+  transform: translateY(-5px);
+  box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+.sensor-card h2{
+  margin:0 0 10px 0;
+  color:#cbd5e1;
+}
+
+.value{
+  font-size:32px;
+  font-weight:bold;
+  color:#f4a261;
+}

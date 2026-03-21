@@ -1,0 +1,39 @@
+<section class="dashboard">
+
+  <!-- Sidebar -->
+   @if (sideBarOn) {
+    <div class="sidebar" id="sidebar">
+
+      <img src="monitexB.png" class="logo" alt="" srcset="">
+      <a href="#">Settings</a>
+
+    </div>
+  }
+
+  <!-- Main Area -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <button id="menu-toggle" (click)="toggleSideBar()">☰</button>
+      <h1>Sensor Dashboard</h1>
+    </div>
+
+    <!-- Dashboard Body -->
+    <div class="dashboard-body">
+
+      <div class="sensor-card">
+        <h2>IR Sensor</h2>
+        <p class="value">0</p>
+      </div>
+
+      <div class="sensor-card">
+        <h2>Motion</h2>
+        <p class="value">Detected</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
