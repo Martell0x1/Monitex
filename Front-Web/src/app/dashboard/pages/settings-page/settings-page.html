@@ -1,0 +1,63 @@
+<section class="settings-layout">
+  <article class="page-card status-card">
+    <p class="eyebrow">Connection State</p>
+    <h2>{{ dashboard.connectionState }}</h2>
+    <p class="page-copy">
+      The SignalR feed is the live transport for sensor readings shown across the dashboard.
+    </p>
+
+    <div class="status-strip">
+      <span class="status-label">Active Devices</span>
+      <strong>{{ dashboard.activeDeviceCount }}</strong>
+    </div>
+
+    <div class="status-strip">
+      <span class="status-label">Alerting Devices</span>
+      <strong>{{ dashboard.alertCount + dashboard.offlineDeviceCount }}</strong>
+    </div>
+  </article>
+
+  <article class="page-card">
+    <p class="eyebrow">Quick Actions</p>
+    <h2>Provisioning</h2>
+
+    <div class="action-grid">
+      <a class="action-link" routerLink="/add-device">
+        <strong>Add Device</strong>
+        <span>Create a new monitored device entry.</span>
+      </a>
+
+      <a class="action-link" routerLink="/add-sensors">
+        <strong>Add Sensors</strong>
+        <span>Register one or more sensors for live readings.</span>
+      </a>
+    </div>
+  </article>
+
+  <article class="page-card">
+    <p class="eyebrow">Environment</p>
+    <h2>System Snapshot</h2>
+
+    <div class="snapshot-grid">
+      <div class="snapshot-item">
+        <span class="status-label">Selected Device</span>
+        <strong>{{ dashboard.selectedDevice?.name || '--' }}</strong>
+      </div>
+
+      <div class="snapshot-item">
+        <span class="status-label">Last Metric</span>
+        <strong>{{ dashboard.liveMetrics['label'] }}</strong>
+      </div>
+
+      <div class="snapshot-item">
+        <span class="status-label">Metric Value</span>
+        <strong>{{ dashboard.liveMetrics['value'] }}</strong>
+      </div>
+
+      <div class="snapshot-item">
+        <span class="status-label">Updated At</span>
+        <strong>{{ dashboard.liveMetrics['updatedAt'] }}</strong>
+      </div>
+    </div>
+  </article>
+</section>

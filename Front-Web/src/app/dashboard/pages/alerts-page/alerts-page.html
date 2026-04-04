@@ -1,0 +1,62 @@
+<section class="page-shell">
+  <div class="alerts-summary">
+    <article class="summary-card">
+      <span class="summary-label">Open Alerts</span>
+      <strong>{{ dashboard.alertCount + dashboard.offlineDeviceCount }}</strong>
+      <span class="summary-meta">Warning and offline devices</span>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-label">Critical State</span>
+      <strong>{{ hasCriticalAlerts ? 'Yes' : 'No' }}</strong>
+      <span class="summary-meta">Offline devices needing action</span>
+    </article>
+
+    <article class="summary-card">
+      <span class="summary-label">Connection</span>
+      <strong>{{ dashboard.connectionState }}</strong>
+      <span class="summary-meta">Current streaming link status</span>
+    </article>
+  </div>
+
+  <section class="page-card">
+    <div class="page-card-head">
+      <div>
+        <p class="eyebrow">Alert Feed</p>
+        <h2>Devices needing attention</h2>
+      </div>
+      <span class="page-caption">Warnings and offline units are collected here for fast review.</span>
+    </div>
+
+    @if (dashboard.isLoadingDevices) {
+      <p class="page-message">Loading alerts...</p>
+    } @else if (dashboard.deviceLoadError) {
+      <p class="page-message">{{ dashboard.deviceLoadError }}</p>
+    } @else if (!flaggedDevices.length) {
+      <p class="page-message">No active alerts. All monitored devices look stable.</p>
+    } @else {
+      <div class="alert-list">
+        @for (device of flaggedDevices; track device.id) {
+          <button class="alert-item" (click)="dashboard.selectDevice(device)">
+            <div class="alert-top">
+              <strong>{{ device.name }}</strong>
+              <span [class]="'device-status tone-' + dashboard.getDeviceStatusTone(device)">
+                {{ device.status || 'Online' }}
+              </span>
+            </div>
+
+            <p class="alert-copy">
+              {{ device.description || 'No device description was provided for this node.' }}
+            </p>
+
+            <div class="alert-meta">
+              <span>{{ device.type }}</span>
+              <span>{{ device.location }}</span>
+              <span>{{ device.ipAddress }}</span>
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </section>
+</section>

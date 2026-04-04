@@ -1,0 +1,66 @@
+:host {
+  display: block;
+}
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.page-card,
+.action-link,
+.snapshot-item,
+.status-strip {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(18, 26, 43, 0.9), rgba(14, 22, 37, 0.92));
+  box-shadow: 0 24px 48px rgba(2, 8, 23, 0.32);
+}
+
+.page-card {
+  border-radius: 28px;
+  padding: 24px;
+}
+
+.page-card h2 {
+  margin: 0 0 12px;
+}
+
+.page-copy,
+.action-link span,
+.status-label {
+  color: var(--text-soft);
+}
+
+.action-grid,
+.snapshot-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.status-strip,
+.snapshot-item {
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.action-link {
+  border-radius: 20px;
+  padding: 18px;
+  text-decoration: none;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 1180px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+}

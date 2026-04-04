@@ -1,100 +1,60 @@
 <section class="dashboard">
   @if (sideBarOn) {
     <aside class="sidebar" id="sidebar">
-      <img src="monitex_cropped_r.png" class="logo" alt="Monitex logo" />
-      <div class="sidebar-copy">
-        <p class="eyebrow">Control Center</p>
-        <h2>Smart Home</h2>
+      <div class="brand-block">
+        <img src="monitex_cropped_r.png" class="logo" alt="Monitex logo" />
+        <div class="brand-copy">
+          <p class="eyebrow">Midnight Control Room</p>
+          <h2>Monitex Ops</h2>
+        </div>
+      </div>
+
+      <div class="sidebar-panel">
+        <p class="eyebrow">Mission Status</p>
+        <h3>Live sensor intelligence for connected spaces.</h3>
         <p class="sidebar-text">
-          Monitor your connected devices and open a live panel for the selected one.
+          Track device health, inspect live readings, and keep the whole network visible from one control surface.
         </p>
       </div>
 
       <nav class="sidebar-links">
-        <a href="#">Overview</a>
-        <a href="#">Settings</a>
+        <a routerLink="/dashboard/overview" routerLinkActive="active">Overview</a>
+        <a routerLink="/dashboard/alerts" routerLinkActive="active">Alerts</a>
+        <a routerLink="/dashboard/devices" routerLinkActive="active">Devices</a>
+        <a routerLink="/dashboard/settings" routerLinkActive="active">Settings</a>
       </nav>
+
+      <div class="sidebar-footer">
+        <span class="footer-label">Signal Link</span>
+        <strong [class]="'footer-value tone-' + connectionTone">{{ connectionState }}</strong>
+      </div>
     </aside>
   }
 
   <div class="main">
-    <div class="topbar">
+    <header class="topbar">
       <button id="menu-toggle" (click)="toggleSideBar()">☰</button>
+
       <div class="topbar-copy">
-        <p class="eyebrow">Dashboard</p>
-        <h1>Device Activity</h1>
+        <p class="eyebrow">{{ pageEyebrow }}</p>
+        <h1>{{ pageTitle }}</h1>
       </div>
-      <div class="connection-badge">{{ connectionState }}</div>
-    </div>
 
-    <div class="dashboard-body">
-      <section class="hero-panel">
-        <p class="eyebrow">Selected Device</p>
-        <h2>{{ selectedDevice?.name || 'No device selected' }}</h2>
-        <p class="hero-description">
-          {{ selectedDevice?.description || 'Choose a device from the right panel to view its live readings.' }}
-        </p>
-
-        <div class="hero-grid">
-          <article class="stat-card primary">
-            <span class="stat-label">{{ liveMetrics['label'] }}</span>
-            <strong class="stat-value">{{ liveMetrics['value'] }}</strong>
-            <span class="stat-meta">Updated {{ liveMetrics['updatedAt'] }}</span>
-          </article>
-
-          <article class="stat-card">
-            <span class="stat-label">Type</span>
-            <strong class="stat-value small">{{ selectedDevice?.type || '--' }}</strong>
-            <span class="stat-meta">Device category</span>
-          </article>
-
-          <article class="stat-card">
-            <span class="stat-label">Location</span>
-            <strong class="stat-value small">{{ selectedDevice?.location || '--' }}</strong>
-            <span class="stat-meta">Installed area</span>
-          </article>
-
-          <article class="stat-card">
-            <span class="stat-label">IP Address</span>
-            <strong class="stat-value small">{{ selectedDevice?.ipAddress || '--' }}</strong>
-            <span class="stat-meta">Network endpoint</span>
-          </article>
-        </div>
-      </section>
-
-      <aside class="device-panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Your Devices</p>
-            <h2>{{ devices.length }} Connected</h2>
-          </div>
+      <div class="topbar-actions">
+        <div class="timestamp-card">
+          <span class="timestamp-label">Live refresh</span>
+          <strong>{{ liveMetrics['updatedAt'] }}</strong>
         </div>
 
-        @if (isLoadingDevices) {
-          <p class="panel-message">Loading devices...</p>
-        } @else if (deviceLoadError) {
-          <p class="panel-message">{{ deviceLoadError }}</p>
-        } @else if (!devices.length) {
-          <p class="panel-message">No devices were found for this user yet.</p>
-        } @else {
-          <div class="device-list">
-            @for (device of devices; track device.id) {
-              <button
-                class="device-item"
-                [class.active]="selectedDevice?.id === device.id"
-                (click)="selectDevice(device)"
-              >
-                <span class="device-item-top">
-                  <strong>{{ device.name }}</strong>
-                  <span class="device-status">{{ device.status || 'Online' }}</span>
-                </span>
-                <span class="device-type">{{ device.type }}</span>
-                <span class="device-location">{{ device.location }}</span>
-              </button>
-            }
-          </div>
-        }
-      </aside>
+        <div [class]="'connection-badge state-' + connectionTone">
+          <span class="pulse-dot"></span>
+          {{ connectionState }}
+        </div>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <router-outlet></router-outlet>
     </div>
   </div>
 </section>

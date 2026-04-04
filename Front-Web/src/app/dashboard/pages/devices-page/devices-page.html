@@ -1,0 +1,77 @@
+<section class="devices-layout">
+  <section class="page-card">
+    <div class="page-card-head">
+      <div>
+        <p class="eyebrow">Device Inventory</p>
+        <h2>All monitored devices</h2>
+      </div>
+      <span class="page-caption">Select a device to make it the active focus across the dashboard.</span>
+    </div>
+
+    @if (dashboard.isLoadingDevices) {
+      <p class="page-message">Loading devices...</p>
+    } @else if (dashboard.deviceLoadError) {
+      <p class="page-message">{{ dashboard.deviceLoadError }}</p>
+    } @else if (!dashboard.devices.length) {
+      <p class="page-message">No devices were found for this user yet.</p>
+    } @else {
+      <div class="table-head">
+        <span>Name</span>
+        <span>Type</span>
+        <span>Location</span>
+        <span>Status</span>
+      </div>
+
+      <div class="device-list">
+        @for (device of dashboard.devices; track device.id) {
+          <button
+            class="device-row"
+            [class.active]="dashboard.selectedDevice?.id === device.id"
+            (click)="dashboard.selectDevice(device)"
+          >
+            <strong>{{ device.name }}</strong>
+            <span>{{ device.type }}</span>
+            <span>{{ device.location }}</span>
+            <span [class]="'device-status tone-' + dashboard.getDeviceStatusTone(device)">
+              {{ device.status || 'Online' }}
+            </span>
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <aside class="page-card inspector-card">
+    <div class="page-card-head">
+      <div>
+        <p class="eyebrow">Selected Device</p>
+        <h2>{{ dashboard.selectedDevice?.name || 'No device selected' }}</h2>
+      </div>
+      <span [class]="'device-status tone-' + dashboard.selectedDeviceStatusTone">
+        {{ dashboard.selectedDevice?.status || 'Awaiting device' }}
+      </span>
+    </div>
+
+    <div class="inspector-grid">
+      <article class="inspector-item">
+        <span class="inspector-label">Description</span>
+        <strong>{{ dashboard.selectedDevice?.description || '--' }}</strong>
+      </article>
+
+      <article class="inspector-item">
+        <span class="inspector-label">IP Address</span>
+        <strong>{{ dashboard.selectedDevice?.ipAddress || '--' }}</strong>
+      </article>
+
+      <article class="inspector-item">
+        <span class="inspector-label">Live Metric</span>
+        <strong>{{ dashboard.liveMetrics['value'] }}</strong>
+      </article>
+
+      <article class="inspector-item">
+        <span class="inspector-label">Last Update</span>
+        <strong>{{ dashboard.liveMetrics['updatedAt'] }}</strong>
+      </article>
+    </div>
+  </aside>
+</section>

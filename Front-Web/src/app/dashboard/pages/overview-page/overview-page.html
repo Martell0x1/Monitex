@@ -1,0 +1,132 @@
+<div class="overview-grid">
+  <article class="overview-card">
+    <span class="overview-label">Active Devices</span>
+    <strong class="overview-value">{{ dashboard.activeDeviceCount }}</strong>
+    <span class="overview-meta">Online monitoring nodes</span>
+  </article>
+
+  <article class="overview-card">
+    <span class="overview-label">Health Score</span>
+    <strong class="overview-value accent-cyan">{{ dashboard.averageHealthScore }}</strong>
+    <span class="overview-meta">Operational network average</span>
+  </article>
+
+  <article class="overview-card">
+    <span class="overview-label">Alert Queue</span>
+    <strong class="overview-value accent-amber">{{ dashboard.alertCount }}</strong>
+    <span class="overview-meta">Devices requiring attention</span>
+  </article>
+
+  <article class="overview-card">
+    <span class="overview-label">Offline Units</span>
+    <strong class="overview-value accent-red">{{ dashboard.offlineDeviceCount }}</strong>
+    <span class="overview-meta">Disconnected endpoints</span>
+  </article>
+</div>
+
+<div class="dashboard-body">
+  <section class="hero-panel">
+    <div class="hero-header">
+      <div>
+        <p class="eyebrow">Primary Device Feed</p>
+        <h2>{{ dashboard.selectedDevice?.name || 'No device selected' }}</h2>
+      </div>
+
+      <div [class]="'device-pill tone-' + dashboard.selectedDeviceStatusTone">
+        <span class="pulse-dot"></span>
+        {{ dashboard.selectedDevice?.status || 'Awaiting device' }}
+      </div>
+    </div>
+
+    <p class="hero-description">
+      {{ dashboard.selectedDevice?.description || 'Choose a device from the telemetry rail to inspect live readings and network details.' }}
+    </p>
+
+    <div class="signal-panel">
+      <div class="signal-copy">
+        <span class="signal-label">{{ dashboard.liveMetrics['label'] }}</span>
+        <strong class="signal-value">{{ dashboard.liveMetrics['value'] }}</strong>
+        <span class="signal-meta">Updated {{ dashboard.liveMetrics['updatedAt'] }}</span>
+      </div>
+
+      <div class="telemetry-visual" aria-hidden="true">
+        @for (point of dashboard.telemetrySeries; track $index) {
+          <span class="telemetry-bar" [style.height]="dashboard.getTelemetryHeight(point)"></span>
+        }
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <article class="detail-card">
+        <span class="detail-label">Device Type</span>
+        <strong>{{ dashboard.selectedDevice?.type || '--' }}</strong>
+        <span class="detail-meta">Telemetry classification</span>
+      </article>
+
+      <article class="detail-card">
+        <span class="detail-label">Location</span>
+        <strong>{{ dashboard.selectedDevice?.location || '--' }}</strong>
+        <span class="detail-meta">Deployment zone</span>
+      </article>
+
+      <article class="detail-card">
+        <span class="detail-label">IP Address</span>
+        <strong>{{ dashboard.selectedDevice?.ipAddress || '--' }}</strong>
+        <span class="detail-meta">Network endpoint</span>
+      </article>
+    </div>
+
+    <div class="zone-grid">
+      @for (metric of dashboard.zoneMetrics; track metric.label) {
+        <article class="zone-card">
+          <span class="zone-label">{{ metric.label }}</span>
+          <strong>{{ metric.value }}</strong>
+          <span class="zone-state">{{ metric.state }}</span>
+        </article>
+      }
+    </div>
+  </section>
+
+  <aside class="device-panel">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Telemetry Rail</p>
+        <h2>{{ dashboard.devices.length }} Devices</h2>
+      </div>
+      <span class="panel-caption">Select a node to focus the live feed.</span>
+    </div>
+
+    @if (dashboard.isLoadingDevices) {
+      <p class="panel-message">Loading devices...</p>
+    } @else if (dashboard.deviceLoadError) {
+      <p class="panel-message">{{ dashboard.deviceLoadError }}</p>
+    } @else if (!dashboard.devices.length) {
+      <p class="panel-message">No devices were found for this user yet.</p>
+    } @else {
+      <div class="device-list">
+        @for (device of dashboard.devices; track device.id) {
+          <button
+            class="device-item"
+            [class.active]="dashboard.selectedDevice?.id === device.id"
+            (click)="dashboard.selectDevice(device)"
+          >
+            <span class="device-item-top">
+              <strong>{{ device.name }}</strong>
+              <span [class]="'device-status tone-' + dashboard.getDeviceStatusTone(device)">
+                {{ device.status || 'Online' }}
+              </span>
+            </span>
+
+            <span class="device-type">{{ device.type }}</span>
+            <span class="device-location">{{ device.location }}</span>
+
+            <span class="device-footer">
+              <span class="device-ip">{{ device.ipAddress }}</span>
+              <span class="device-link">Inspect live feed</span>
+            </span>
+          </button>
+        }
+      </div>
+    }
+  </aside>
+</div>

@@ -1,0 +1,277 @@
+:host {
+  display: block;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.overview-card,
+.hero-panel,
+.device-panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface), var(--surface-alt));
+  box-shadow: 0 24px 48px rgba(2, 8, 23, 0.32);
+}
+
+.overview-card {
+  padding: 20px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overview-label,
+.detail-label,
+.zone-label,
+.signal-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-soft);
+}
+
+.overview-value {
+  font-size: clamp(1.9rem, 2vw, 2.7rem);
+  line-height: 1;
+}
+
+.overview-meta,
+.hero-description,
+.panel-caption,
+.panel-message,
+.detail-meta,
+.zone-state,
+.device-type,
+.device-location,
+.device-ip,
+.signal-meta {
+  color: var(--text-soft);
+}
+
+.dashboard-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.92fr);
+  gap: 22px;
+}
+
+.hero-panel,
+.device-panel {
+  border-radius: 28px;
+}
+
+.hero-panel {
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-panel::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: -110px;
+  top: -80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(103, 111, 157, 0.22), transparent 68%);
+  pointer-events: none;
+}
+
+.hero-panel h2,
+.panel-header h2 {
+  margin: 0;
+}
+
+.hero-header,
+.device-item-top,
+.device-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-description {
+  margin: -10px 0 0;
+  max-width: 700px;
+  line-height: 1.65;
+}
+
+.signal-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.signal-copy,
+.telemetry-visual,
+.detail-card,
+.zone-card,
+.device-item {
+  border: 1px solid rgba(160, 167, 192, 0.14);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.signal-copy {
+  padding: 22px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.signal-value {
+  font-size: clamp(3rem, 5vw, 5.4rem);
+  line-height: 0.95;
+  color: #ffffff;
+  text-shadow: 0 0 24px rgba(244, 162, 97, 0.22);
+}
+
+.telemetry-visual {
+  min-height: 220px;
+  border-radius: 24px;
+  padding: 22px 18px;
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  background:
+    linear-gradient(180deg, rgba(103, 111, 157, 0.14), rgba(244, 162, 97, 0.05)),
+    rgba(255, 255, 255, 0.03);
+}
+
+.telemetry-bar {
+  flex: 1;
+  min-width: 10px;
+  border-radius: 999px 999px 4px 4px;
+  background: linear-gradient(180deg, #f9b17a 0%, #f4a261 48%, #676f9d 100%);
+  box-shadow: 0 0 18px rgba(244, 162, 97, 0.2);
+  animation: rise 0.7s ease;
+}
+
+.detail-grid,
+.zone-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.zone-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.detail-card,
+.zone-card {
+  padding: 18px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-card strong,
+.zone-card strong {
+  font-size: 1.1rem;
+}
+
+.device-panel {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.device-item {
+  width: 100%;
+  padding: 16px;
+  border-radius: 20px;
+  color: var(--text-main);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.device-item:hover,
+.device-item.active {
+  transform: translateX(-3px);
+  border-color: rgba(244, 162, 97, 0.3);
+  background: rgba(244, 162, 97, 0.08);
+}
+
+.device-footer {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.device-link {
+  color: #f4a261;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .overview-grid,
+  .detail-grid,
+  .zone-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-body,
+  .signal-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-panel,
+  .device-panel,
+  .overview-card {
+    border-radius: 20px;
+  }
+
+  .overview-grid,
+  .detail-grid,
+  .zone-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-header,
+  .device-item-top,
+  .device-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
