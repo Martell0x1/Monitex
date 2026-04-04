@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.DTO;
@@ -10,9 +11,11 @@ namespace SmartHome.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _AuthService;
+    private readonly IDeviceService _IDevice;
     public AuthController(IAuthService UserService) => _AuthService = UserService;
 
     [Route("register")]
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterDTO body)
     {
@@ -22,6 +25,7 @@ public class AuthController : ControllerBase
         return Ok(new{message="User Created Succefully",token=AuthResponce.AccessToken});
     }
     [Route("login")]
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginDTO body)
     {

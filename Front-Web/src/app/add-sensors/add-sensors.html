@@ -1,0 +1,57 @@
+<section class="device-register">
+  <div class="logo">
+    <img src="monitex_cropped_r.png" />
+  </div>
+
+  <div class="register-card">
+    <form class="register-form" (ngSubmit)="registerSensors()">
+      <h2>Add Your Sensors</h2>
+
+      <div class="sensor-list">
+        @for (sensor of sensors; track $index; let i = $index) {
+          <div class="sensor-block">
+            <div class="sensor-header">
+              <h3>Sensor {{ i + 1 }}</h3>
+              <button
+                type="button"
+                class="remove-btn"
+                (click)="removeSensor(i)"
+                [disabled]="sensors.length === 1"
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="input-group">
+              <input type="text" placeholder=" " required [(ngModel)]="sensor.name" [name]="'name-' + i" />
+              <label>Sensor Name</label>
+            </div>
+
+            <div class="input-group">
+              <input type="text" placeholder=" " [(ngModel)]="sensor.type" [name]="'type-' + i" />
+              <label>Sensor Type (Temperature / Motion / Humidity)</label>
+            </div>
+
+            <div class="input-group">
+              <input type="text" placeholder=" " [(ngModel)]="sensor.location" [name]="'location-' + i" />
+              <label>Location (Living Room, Kitchen...)</label>
+            </div>
+
+            <div class="input-group">
+              <input type="text" placeholder=" " [(ngModel)]="sensor.ipAddress" [name]="'ip-' + i" />
+              <label>IP Address (Optional)</label>
+            </div>
+
+            <div class="input-group">
+              <input type="text" placeholder=" " [(ngModel)]="sensor.description" [name]="'description-' + i" />
+              <label>Description</label>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button type="button" class="secondary-btn" (click)="addSensor()">+ Add Sensor</button>
+      <button type="submit" class="register-btn">Register Sensors</button>
+    </form>
+  </div>
+</section>

@@ -6,7 +6,8 @@ public interface IUserRepository
 {
     public  Task<User?> GetUserById(int id);
     public Task<User?> GetUserByEmailAsync(string email);
-    public User GetUserByIdMock(int id);
+    public Task<User?> GetUserByDeviceIdAsync(int device_id);
+
     public Task<IEnumerable<User>> GetAllUsers();
     public Task<int> CreateUser(User user);
     public Task EditUser(int id , User user);

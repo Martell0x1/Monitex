@@ -1,0 +1,155 @@
+.device-register {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #171e35;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 30px 10px;
+}
+
+.logo {
+  display: flex;
+}
+
+.register-card {
+  width: min(850px, 95vw);
+  background-color: #424769;
+  border-radius: 20px;
+  display: flex;
+  box-shadow:
+    rgba(0, 0, 0, 0.16) 0px 10px 36px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.register-form {
+  flex: 1;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-form h2 {
+  color: white;
+}
+
+.sensor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.sensor-block {
+  background-color: rgba(103, 111, 157, 0.25);
+  border: 1px solid rgba(249, 177, 122, 0.25);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sensor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sensor-header h3 {
+  margin: 0;
+  color: #f0f2ff;
+  font-size: 15px;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 15px;
+  background-color: #676f9d;
+  border: none;
+  color: white;
+  font-size: 14px;
+}
+
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 16px;
+  color: #a0a7c0;
+  transition: 0.3s ease;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 8px;
+  font-size: 13px;
+  padding: 0 5px;
+  color: #f9b17a;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-left: 4px solid #f4a261;
+  transform: scale(1.01, 1.08);
+}
+
+.register-btn,
+.secondary-btn,
+.remove-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.register-btn {
+  background-color: #f4a261;
+  color: #2f3552;
+  box-shadow: 0 5px 15px rgba(244, 162, 97, 0.4);
+}
+
+.register-btn:hover {
+  background-color: #ffb870;
+  box-shadow: 0 8px 20px rgba(244, 162, 97, 0.6);
+}
+
+.secondary-btn {
+  background-color: #7f89be;
+  color: #fff;
+}
+
+.secondary-btn:hover {
+  background-color: #93a0df;
+}
+
+.remove-btn {
+  background-color: #2f3552;
+  color: #f9b17a;
+  padding: 8px 10px;
+}
+
+.remove-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .register-form {
+    padding: 18px;
+  }
+
+  .sensor-list {
+    max-height: 62vh;
+  }
+}

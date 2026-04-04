@@ -4,24 +4,24 @@ using SmartHome.Model;
 
 namespace SmartHome.Data.Repositories;
 
-public class UserRepository : BaseRepository,IUserRepository
+public class UserRepository : BaseNpRepository,IUserRepository
 {
-    public UserRepository (DbContext dbContext) : base(dbContext){}
+    public UserRepository (PostgresDbContext dbContext) : base(dbContext){}
     public async Task<int> CreateUser(User user)
     {
         return await ExecuteQueryAsync<int>(async cmd =>
         {
-           cmd.Parameters.Add("@Username",SqlDbType.VarChar).Value = user.Username;
-           cmd.Parameters.Add("@Email",SqlDbType.VarChar).Value = user.Email;
-           cmd.Parameters.Add("@Password",SqlDbType.VarChar).Value = user.Password;
-           
+           cmd.Parameters.Add("@Username",NpgsqlTypes.NpgsqlDbType.Varchar).Value = user.Username;
+           cmd.Parameters.Add("@Email",NpgsqlTypes.NpgsqlDbType.Varchar).Value = user.Email;
+           cmd.Parameters.Add("@Password",NpgsqlTypes.NpgsqlDbType.Varchar).Value = user.Password;
+
            var result = await cmd.ExecuteScalarAsync();
 
-           return result != null ? 
+           return result != null ?
               Convert.ToInt32(result) : throw new InvalidOperationException("User Creation Failed") ;
-        },@"INSERT INTO Users (Username , Email , Password)
-            OUTPUT INSERTED.Id
-            VALUES (@Username , @Email , @Password)");
+        },@"INSERT INTO Users (user_name , email , password)
+            VALUES (@Username , @Email , @Password)
+            RETURNING user_id");
     }
 
     public Task DeleteUser(int id)
@@ -39,11 +39,38 @@ public class UserRepository : BaseRepository,IUserRepository
         throw new NotImplementedException();
     }
 
-    public async Task<User?> GetUserByEmailAsync(string email)
+  public async Task<User?> GetUserByDeviceIdAsync(int device_id)
+  {
+    return await ExecuteQueryAsync<User?>(async cmd =>
+    {
+      cmd.Parameters.Add("@device_id",NpgsqlTypes.NpgsqlDbType.Integer).Value=device_id;
+
+      using var reader = await cmd.ExecuteReaderAsync();
+
+      if(!await reader.ReadAsync())
+        return null;
+
+      var user = new User
+      {
+        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        Username = reader.GetString(reader.GetOrdinal("Username")),
+        Email = reader.GetString(reader.GetOrdinal("Email")),
+        Password = reader.GetString(reader.GetOrdinal("Password"))
+      };
+
+      return user;
+
+      },@"SELECT u.user_id, u.user_name, u.email, u.password
+              FROM Users u
+              INNER JOIN devices d ON u.user_id = d.user_id
+              WHERE d.device_id = @device_id;");
+  }
+
+  public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await ExecuteQueryAsync<User?>(async cmd =>
         {
-            cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = email;
+            cmd.Parameters.Add("@Email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = email;
 
             using var reader = await cmd.ExecuteReaderAsync();
 
@@ -51,24 +78,24 @@ public class UserRepository : BaseRepository,IUserRepository
             {
                 return new User
                 {
-                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                    Username = reader.GetString(reader.GetOrdinal("Username")),
-                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                    Password = reader.GetString(reader.GetOrdinal("Password")),
+                    Id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                    Username = reader.GetString(reader.GetOrdinal("user_name")),
+                    Email = reader.GetString(reader.GetOrdinal("email")),
+                    Password = reader.GetString(reader.GetOrdinal("password")),
                 };
             }
 
             return null;
         },
-        @"SELECT Id, Username, Email, Password
+        @"SELECT user_id, user_name, email, password
         FROM Users
-        WHERE Email = @Email;");
+        WHERE email = @Email;");
     }
 
     public async Task<User?> GetUserById(int id)
     {
         return await ExecuteQueryAsync<User>(async cmd => {
-            cmd.Parameters.Add("@Id",SqlDbType.Int).Value = id;
+            cmd.Parameters.Add("@Id",NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
 
             using var reader = await cmd.ExecuteReaderAsync();
 
@@ -81,24 +108,6 @@ public class UserRepository : BaseRepository,IUserRepository
                 };
             }
             return null;
-        },"SELECT * FROM Users where Id = @Id");
-    }
-    public User? GetUserByIdMock(int id)
-    {
-        return ExecuteQuery(cmd =>
-        {
-            cmd.Parameters.Add("@Id",SqlDbType.Int).Value = id;
-            using var reader =cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                return new User
-                {
-                    Id = reader.GetInt32(0),
-                    Username = reader.GetString(1)
-                };
-            }
-            return null;
-        },@"WAITFOR DELAY '00:00:02';
-          SELECT * FROM Users where Id = @Id");
+        },"SELECT * FROM Users where user_id = @Id");
     }
 }

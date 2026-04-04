@@ -1,0 +1,174 @@
+.device-register {
+
+  height: 100vh;
+  width: 100vw;
+  background-color:#171E35;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction: column;
+
+}
+.logo {
+  display: flex;
+
+}
+
+.register-card {
+
+  width: 850px;
+
+  background-color:#424769;
+
+  border-radius:20px;
+
+  display:flex;
+
+  box-shadow:
+    rgba(0,0,0,0.16) 0px 10px 36px,
+    rgba(0,0,0,0.06) 0px 0px 0px 1px;
+
+}
+
+
+.device-image {
+
+  flex:1;
+
+  display:flex;
+
+  overflow:hidden;
+
+}
+
+
+.device-image img {
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+}
+
+
+.register-form {
+
+  flex:1;
+
+  padding:25px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:20px;
+
+}
+
+
+.register-form h2 {
+
+  color:white;
+
+}
+
+
+.input-group {
+
+  position:relative;
+
+}
+
+
+.input-group input {
+
+  width:100%;
+
+  padding:15px;
+
+  background-color:#676f9d;
+
+  border:none;
+
+  color:white;
+
+  font-size:14px;
+
+}
+
+
+.input-group label {
+
+  position:absolute;
+
+  left:12px;
+
+  top:16px;
+
+  color:#a0a7c0;
+
+  transition:0.3s ease;
+
+}
+
+
+.input-group input:focus + label,
+
+.input-group input:not(:placeholder-shown) + label {
+
+  top:-8px;
+
+  left:8px;
+
+  font-size:13px;
+
+  padding:0 5px;
+
+  color:#f9b17a;
+
+}
+
+
+.input-group input:focus {
+
+  outline:none;
+
+  border-left:4px solid #f4a261;
+
+  transform:scale(1.01,1.26);
+
+}
+
+
+.register-btn {
+
+  padding:14px;
+
+  border:none;
+
+  border-radius:6px;
+
+  background-color:#f4a261;
+
+  color:#2f3552;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.3s;
+
+  box-shadow:0 5px 15px rgba(244,162,97,0.4);
+
+}
+
+
+.register-btn:hover {
+
+  background-color:#ffb870;
+
+  box-shadow:0 8px 20px rgba(244,162,97,0.6);
+
+}

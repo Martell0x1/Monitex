@@ -1,0 +1,42 @@
+.notification-container {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9999;
+}
+
+.notification {
+  min-width: 260px;
+  max-width: 420px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  color: #f8fafc;
+}
+
+.notification.error {
+  background-color: #dc2626;
+}
+
+.notification.success {
+  background-color: #16a34a;
+}
+
+.notification.info {
+  background-color: #2563eb;
+}
+
+.notification button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}

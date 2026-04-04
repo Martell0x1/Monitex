@@ -5,17 +5,19 @@ namespace SmartHome.Model;
 public class Device
 {
     [Required]
-    public int Id { get; set; }
+    public int Device_id { get; set; }
 
-    [Required]
-    public string DeviceIdentifier { get; set; }
-    public string Name { get; set; }
+  [Required]
+  public int User_id {get ; set;}
 
-    [Required]
-    public int HomeId { get; set; }
-    [Required]
-    public Home Home { get; set; }
+  [Required]
 
-    [Required]
-    public List<SensorReading> SensorReadings { get; set; }
+  public string Device_name {get ; set;}
+
+  [Required]
+
+  public string Device_status{get; set;}
+
+  public DateTime LastSeen {get;set;}
+
 }

@@ -1,39 +1,100 @@
 <section class="dashboard">
+  @if (sideBarOn) {
+    <aside class="sidebar" id="sidebar">
+      <img src="monitex_cropped_r.png" class="logo" alt="Monitex logo" />
+      <div class="sidebar-copy">
+        <p class="eyebrow">Control Center</p>
+        <h2>Smart Home</h2>
+        <p class="sidebar-text">
+          Monitor your connected devices and open a live panel for the selected one.
+        </p>
+      </div>
 
-  <!-- Sidebar -->
-   @if (sideBarOn) {
-    <div class="sidebar" id="sidebar">
-
-      <img src="monitexB.png" class="logo" alt="" srcset="">
-      <a href="#">Settings</a>
-
-    </div>
+      <nav class="sidebar-links">
+        <a href="#">Overview</a>
+        <a href="#">Settings</a>
+      </nav>
+    </aside>
   }
 
-  <!-- Main Area -->
   <div class="main">
-
-    <!-- Topbar -->
     <div class="topbar">
       <button id="menu-toggle" (click)="toggleSideBar()">☰</button>
-      <h1>Sensor Dashboard</h1>
+      <div class="topbar-copy">
+        <p class="eyebrow">Dashboard</p>
+        <h1>Device Activity</h1>
+      </div>
+      <div class="connection-badge">{{ connectionState }}</div>
     </div>
 
-    <!-- Dashboard Body -->
     <div class="dashboard-body">
+      <section class="hero-panel">
+        <p class="eyebrow">Selected Device</p>
+        <h2>{{ selectedDevice?.name || 'No device selected' }}</h2>
+        <p class="hero-description">
+          {{ selectedDevice?.description || 'Choose a device from the right panel to view its live readings.' }}
+        </p>
 
-      <div class="sensor-card">
-        <h2>IR Sensor</h2>
-        <p class="value">{{Ir_data}}</p>
-      </div>
+        <div class="hero-grid">
+          <article class="stat-card primary">
+            <span class="stat-label">{{ liveMetrics['label'] }}</span>
+            <strong class="stat-value">{{ liveMetrics['value'] }}</strong>
+            <span class="stat-meta">Updated {{ liveMetrics['updatedAt'] }}</span>
+          </article>
 
-      <div class="sensor-card">
-        <h2>Motion</h2>
-        <p class="value">Detected</p>
-      </div>
+          <article class="stat-card">
+            <span class="stat-label">Type</span>
+            <strong class="stat-value small">{{ selectedDevice?.type || '--' }}</strong>
+            <span class="stat-meta">Device category</span>
+          </article>
 
+          <article class="stat-card">
+            <span class="stat-label">Location</span>
+            <strong class="stat-value small">{{ selectedDevice?.location || '--' }}</strong>
+            <span class="stat-meta">Installed area</span>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">IP Address</span>
+            <strong class="stat-value small">{{ selectedDevice?.ipAddress || '--' }}</strong>
+            <span class="stat-meta">Network endpoint</span>
+          </article>
+        </div>
+      </section>
+
+      <aside class="device-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Your Devices</p>
+            <h2>{{ devices.length }} Connected</h2>
+          </div>
+        </div>
+
+        @if (isLoadingDevices) {
+          <p class="panel-message">Loading devices...</p>
+        } @else if (deviceLoadError) {
+          <p class="panel-message">{{ deviceLoadError }}</p>
+        } @else if (!devices.length) {
+          <p class="panel-message">No devices were found for this user yet.</p>
+        } @else {
+          <div class="device-list">
+            @for (device of devices; track device.id) {
+              <button
+                class="device-item"
+                [class.active]="selectedDevice?.id === device.id"
+                (click)="selectDevice(device)"
+              >
+                <span class="device-item-top">
+                  <strong>{{ device.name }}</strong>
+                  <span class="device-status">{{ device.status || 'Online' }}</span>
+                </span>
+                <span class="device-type">{{ device.type }}</span>
+                <span class="device-location">{{ device.location }}</span>
+              </button>
+            }
+          </div>
+        }
+      </aside>
     </div>
-
   </div>
-
 </section>

@@ -1,0 +1,14 @@
+<div
+  class="notification-container"
+  *ngIf="notificationService.notification() as notification"
+>
+  <div
+    class="notification"
+    [class.error]="notification.type === 'error'"
+    [class.success]="notification.type === 'success'"
+    [class.info]="notification.type === 'info'"
+  >
+    <span>{{ notification.message }}</span>
+    <button type="button" (click)="clearNotification()">x</button>
+  </div>
+</div>

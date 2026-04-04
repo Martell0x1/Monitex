@@ -5,7 +5,7 @@ namespace SmartHome.Services;
 
 public interface IUserService
 {
-    public User GetUserByIdSync(int id);
+    public Task<User> GetUserByIdSync(int id);
     public Task<User?> GetUserByIdAsync(int id);
     public Task<User?> GetUserByEmailAsync(string email);
     public IEnumerable<User> GetAllUsers();

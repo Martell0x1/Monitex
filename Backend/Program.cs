@@ -18,16 +18,25 @@ builder.Services.AddHostedService<RabbitmqConsumer>();
 #endregion
 
 #region Kestrel Port Configuration
+
 builder.WebHost.ConfigureKestrel(opts =>
 {
   opts.ListenAnyIP(5020);
 });
 #endregion
 
+#region Databse Configuration
+builder.Services.AddSingleton<PostgresDbContext>();
+
+#endregion
+
 #region Services
-builder.Services.AddSingleton<DbContext>();
 builder.Services.AddScoped<IUserRepository , UserRepository>();
+builder.Services.AddScoped<IDeviceRepository,DeviceRepository>();
+builder.Services.AddScoped<ISensorRepository,SensorRepository>();
 builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IDeviceService,DeviceService>();
+builder.Services.AddScoped<ISensorService,SensorService>();
 builder.Services.AddScoped<IAuthService , AuthService>();
 builder.Services.AddSingleton<MQTTtoAMQP>();
 builder.Services.AddSingleton<MosquittoConfig>();
@@ -55,7 +64,7 @@ builder.Services.AddAuthentication(ops =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = jwtSettings["Author"],
+        ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
@@ -116,4 +125,3 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-

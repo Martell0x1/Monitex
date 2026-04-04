@@ -10,11 +10,24 @@ namespace SmartHome.Services;
 public class AuthService : IAuthService
 {
     private readonly IUserService _UserService;
+    private readonly IDeviceRepository _deviceRepository;
+
+    private readonly ISensorRepository _sensorRepository;
     private readonly IConfiguration _config;
 
-    public AuthService(IUserService service , IConfiguration config)
+    private readonly ILogger<AuthService> _logger;
+
+    public AuthService(
+      IUserService service,
+      IDeviceRepository deviceRepository,
+      ISensorRepository sensorRepository,
+      IConfiguration config,
+      ILogger<AuthService> logger)
     {
         _UserService = service;
+        _deviceRepository = deviceRepository;
+        _sensorRepository = sensorRepository;
+        _logger = logger;
         _config = config;
     }
     public async Task<AuthResponseDto?> RegisterAsync(RegisterDTO dto)
@@ -23,9 +36,9 @@ public class AuthService : IAuthService
         if(user == null)
             return null;
         var userId = user.Id;
-        return GenerateJWTtoken(userId,user.Username,user.Email);
+        return GenerateJWTtoken(userId, user.Username, user.Email, false,false);
     }
-    public AuthResponseDto GenerateJWTtoken(int userId , string username ,string email)
+    public AuthResponseDto GenerateJWTtoken(int userId, string username, string email, bool hasDevices , bool hasSensors)
     {
         var jwtSettings = _config.GetSection("Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["key"]));
@@ -36,8 +49,11 @@ public class AuthService : IAuthService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim("userId", userId.ToString()),
             new Claim(ClaimTypes.Email, email),
             new Claim(ClaimTypes.Name, username),
+            new Claim("hasDevices", hasDevices.ToString().ToLower()),
+            new Claim("hasSensors", hasSensors.ToString().ToLower()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -54,18 +70,31 @@ public class AuthService : IAuthService
         return new AuthResponseDto
         {
             AccessToken = AccessToken,
-            ExpiresAt = token.ValidTo
+            ExpiresAt = token.ValidTo,
+            HasDevices = hasDevices,
+            HasSensors = hasSensors
         };
     }
 
     public async Task<AuthResponseDto?> LoginAsync(LoginDTO dto)
     {
         var user = await _UserService.GetUserByEmailAsync(dto.Email);
-        
-        if(user == null || !BCrypt.Net.BCrypt.Verify(dto.Password,user.Password)) 
+
+        if(user == null || !BCrypt.Net.BCrypt.Verify(dto.Password,user.Password))
             return null;
 
-        return GenerateJWTtoken(user.Id,user.Username,user.Email);
+        var deviceCount = await _deviceRepository.GetDevicesCountByUserIdAsync(user.Id) ?? 0;
+        var hasDevices = deviceCount > 0;
+
+        var sensorsCount = await _sensorRepository.GetSensorsCountByUserId(user.Id) ?? 0;
+        var hasSensors = sensorsCount > 0;
+
+        _logger.Log(LogLevel.Information,$"{deviceCount}/{sensorsCount}");
+
+
+        return GenerateJWTtoken(
+          user.Id, user.Username,
+          user.Email, hasDevices , hasSensors);
 
     }
 

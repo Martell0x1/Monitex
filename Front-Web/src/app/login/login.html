@@ -1,6 +1,7 @@
 <section class = "login">
+  <app-notification></app-notification>
   <div class="header">
-    <img src="monitex.png">
+    <img src="monitex_cropped_r.png">
   </div>
   <div class="login-card">
       <div class = "login-image">
@@ -11,12 +12,12 @@
       <h2>Welcome Back</h2>
 
       <div class="input-group">
-        <input type="email" placeholder=" " required>
+        <input type="email" placeholder=" " required [(ngModel)]="email">
         <label>Email</label>
       </div>
 
       <div class="input-group">
-        <input type="password" placeholder=" " required>
+        <input type="password" placeholder=" " required [(ngModel)]="password">
         <label>Password</label>
       </div>
       <div class="options">
@@ -27,7 +28,7 @@
         </label>
         <a href="#">Forget Password?</a>
       </div>
-      <button class = "login-btn">Login</button>
+      <button class = "login-btn" (click)="login()">Login</button>
       <app-divider [message]="'OR Login With'"></app-divider>
       <div class="social-login">
         <button class="social-btn google">

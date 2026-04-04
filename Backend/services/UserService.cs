@@ -9,7 +9,7 @@ namespace SmartHome.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _IUserRepository;
-    public UserService(IUserRepository repo) => _IUserRepository = repo; 
+    public UserService(IUserRepository repo) => _IUserRepository = repo;
     public async Task<User> CreateUserAsync(RegisterDTO dto)
     {
         var existinguser = await _IUserRepository.GetUserByEmailAsync(dto.Email);
@@ -41,9 +41,9 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
-    public User GetUserByIdSync(int id)
+    public async Task<User> GetUserByIdSync(int id)
     {
-        return _IUserRepository.GetUserByIdMock(id);
+        return await _IUserRepository.GetUserByDeviceIdAsync(id);
     }
     public async Task<User?> GetUserByIdAsync(int id)
     {

@@ -2,7 +2,8 @@
 
   height: 100%;
   width: 100%;
-  background-color: #2d3250;
+  /* background-color: #2d3250; */
+  background-color:#171E35;
   display: flex;
   flex-direction: column;
   justify-content: center;
