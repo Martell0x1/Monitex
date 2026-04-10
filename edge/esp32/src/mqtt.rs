@@ -14,7 +14,7 @@ pub fn init_mqtt() -> Result<EspMqttClient<'static>, EspError> {
     };
 
     let (mut client, mut conn) =
-        EspMqttClient::new("mqtt://192.168.1.3:1883", &config)?;
+        EspMqttClient::new("mqtt://192.168.1.2:1883", &config)?;
 
     let connected = Arc::new(Mutex::new(false));
     let connected_clone = connected.clone();

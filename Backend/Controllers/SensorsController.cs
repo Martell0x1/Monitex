@@ -8,7 +8,7 @@ namespace SmartHome.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("/api/sensors/create")]
+[Route("/api/sensors")]
 public class SensorsController : ControllerBase
 {
     private readonly ISensorService _sensorService;
@@ -16,6 +16,26 @@ public class SensorsController : ControllerBase
     public SensorsController(ISensorService sensorService)
     {
         _sensorService = sensorService;
+    }
+
+    [HttpGet("device/{deviceId:int}")]
+    public async Task<IActionResult> GetSensorsByDevice(int deviceId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("sub")?.Value;
+
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized(new { message = "Invalid user token" });
+
+        try
+        {
+            var sensors = await _sensorService.GetSensorsByDeviceAsync(deviceId, userId);
+            return Ok(sensors);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 
     [HttpPost("bulk")]

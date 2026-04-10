@@ -9,6 +9,8 @@ public interface IDeviceRepository
   public Task<Device?> GetDeviceByIdForUserAsync(int deviceId, int userId);
   public Task<Device?> GetLatestDeviceByUserAsync(int userId);
 
+  public Task<List<Device?>>GetDevicesByUserIdAsync(int userId);
+
   public Task<int?> GetDevicesCountByUserIdAsync(int user_id);
   public Task<int> CreateDeviceAsync(Device device);
 

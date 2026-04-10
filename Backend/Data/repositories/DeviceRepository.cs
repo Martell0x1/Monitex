@@ -45,7 +45,7 @@ public class DeviceRepository : BaseNpRepository, IDeviceRepository
                 User_id = reader.GetInt32(1),
                 Device_name = reader.GetString(2),
                 Device_status = reader.GetString(3),
-                LastSeen = reader.GetDateTime(4)
+                LastSeen = reader.IsDBNull(4) ? DateTime.MinValue : reader.GetDateTime(4)
             };
 
         },
@@ -71,12 +71,40 @@ public class DeviceRepository : BaseNpRepository, IDeviceRepository
           User_id = reader.GetInt32(1),
           Device_name = reader.GetString(2),
           Device_status = reader.GetString(3),
-          LastSeen = reader.GetDateTime(4)
+          LastSeen = reader.IsDBNull(4) ? DateTime.MinValue : reader.GetDateTime(4)
       };
 
     },@"SELECT device_id, user_id, device_name, device_status, last_seen
           FROM devices
           WHERE device_id = @device_id AND user_id = @user_id");
+  }
+  public async Task<List<Device>> GetDevicesByUserIdAsync(int userId)
+  {
+      return await ExecuteQueryAsync<List<Device>>(async cmd =>
+      {
+          cmd.Parameters.Add("@user_id", NpgsqlTypes.NpgsqlDbType.Integer).Value = userId;
+
+          var devices = new List<Device>();
+
+          using var reader = await cmd.ExecuteReaderAsync();
+
+          while (await reader.ReadAsync())
+          {
+              devices.Add(new Device
+              {
+                  Device_id = reader.GetInt32(0),
+                  User_id = reader.GetInt32(1),
+                  Device_name = reader.GetString(2),
+                  Device_status = reader.GetString(3),
+                  LastSeen = reader.IsDBNull(4) ? DateTime.MinValue : reader.GetDateTime(4)
+              });
+          }
+
+          return devices;
+      },
+      @"SELECT device_id, user_id, device_name, device_status, last_seen
+        FROM devices
+        WHERE user_id = @user_id");
   }
 
   public async Task<Device?> GetLatestDeviceByUserAsync(int userId)
@@ -123,7 +151,7 @@ public class DeviceRepository : BaseNpRepository, IDeviceRepository
                 User_id = reader.GetInt32(1),
                 Device_name = reader.GetString(2),
                 Device_status = reader.GetString(3),
-                LastSeen = reader.GetDateTime(4)
+                LastSeen = reader.IsDBNull(4) ? DateTime.MinValue : reader.GetDateTime(4)
             };
 
         },

@@ -5,10 +5,12 @@
     <span class="overview-meta">Online monitoring nodes</span>
   </article>
 
-  <article class="overview-card">
+  <article class="overview-card overview-card-health" [class]="'overview-card overview-card-health tone-' + dashboard.averageHealthTone">
     <span class="overview-label">Health Score</span>
-    <strong class="overview-value accent-cyan">{{ dashboard.averageHealthScore }}</strong>
-    <span class="overview-meta">Operational network average</span>
+    <strong class="overview-value">{{ dashboard.averageHealthScore }}</strong>
+    <span class="overview-meta">
+      {{ dashboard.selectedDeviceHealth?.state || 'Awaiting heartbeat' }}
+    </span>
   </article>
 
   <article class="overview-card">
@@ -43,17 +45,104 @@
     </p>
 
     <div class="signal-panel">
-      <div class="signal-copy">
-        <span class="signal-label">{{ dashboard.liveMetrics['label'] }}</span>
-        <strong class="signal-value">{{ dashboard.liveMetrics['value'] }}</strong>
-        <span class="signal-meta">Updated {{ dashboard.liveMetrics['updatedAt'] }}</span>
+      <div class="signal-copy" [class]="'signal-copy tone-' + dashboard.averageHealthTone">
+        <span class="signal-label">Sensor Overview</span>
+        <strong class="signal-value">{{ dashboard.selectedDeviceSensorCount }}</strong>
+        <span class="signal-meta">{{ dashboard.liveMetrics['label'] }}</span>
       </div>
 
-      <div class="telemetry-visual" aria-hidden="true">
-        @for (point of dashboard.telemetrySeries; track $index) {
-          <span class="telemetry-bar" [style.height]="dashboard.getTelemetryHeight(point)"></span>
+      <div class="signal-copy signal-copy-compact">
+        <span class="signal-label">Live Snapshot</span>
+        <strong class="signal-inline-value">{{ dashboard.liveMetrics['value'] }}</strong>
+        <span class="signal-meta">Updated {{ dashboard.liveMetrics['updatedAt'] }}</span>
+      </div>
+    </div>
+
+    <div class="health-stage" [class]="'tone-' + dashboard.averageHealthTone">
+      <div class="health-stage-head">
+        <div>
+          <span class="signal-label">Device Health</span>
+          <h3>{{ dashboard.selectedDeviceHealth?.state || 'Awaiting heartbeat' }}</h3>
+        </div>
+        <strong class="health-score">
+          {{ dashboard.selectedDeviceHealth?.score ?? '--' }}{{ dashboard.selectedDeviceHealth ? '%' : '' }}
+        </strong>
+      </div>
+
+      <div class="health-metrics">
+        <article class="health-metric">
+          <span class="health-metric-label">Wi-Fi RSSI</span>
+          <strong>{{ dashboard.selectedDeviceHealth?.wifiRssi ?? '--' }}</strong>
+        </article>
+
+        <article class="health-metric">
+          <span class="health-metric-label">Free Heap</span>
+          <strong>{{ dashboard.selectedDeviceHealth?.freeHeapBytes ?? '--' }}</strong>
+        </article>
+
+        <article class="health-metric">
+          <span class="health-metric-label">Uptime</span>
+          <strong>{{ dashboard.selectedDeviceHealth?.uptimeSeconds ?? '--' }}</strong>
+        </article>
+      </div>
+
+      <div class="health-reasons">
+        @for (reason of dashboard.selectedDeviceHealthReasons; track reason) {
+          <p class="health-reason">{{ reason }}</p>
         }
       </div>
+    </div>
+
+    <div class="sensor-stage">
+      <div class="sensor-stage-head">
+        <div>
+          <span class="signal-label">Sensors</span>
+          <h3>Live sensor cards</h3>
+        </div>
+        <span class="signal-meta">{{ dashboard.selectedDeviceSensorCount }} registered</span>
+      </div>
+
+      @if (dashboard.isLoadingSensors) {
+        <p class="sensor-stage-message">Loading sensors for the selected device...</p>
+      } @else if (dashboard.sensorLoadError) {
+        <p class="sensor-stage-message">{{ dashboard.sensorLoadError }}</p>
+      } @else if (!dashboard.sensorCards.length) {
+        <p class="sensor-stage-message">No sensors are registered for this device yet.</p>
+      } @else {
+        <div class="sensor-grid">
+          @for (sensor of dashboard.sensorCards; track sensor.sensorKey) {
+            <article class="sensor-card" [style.--sensor-accent]="sensor.accentColor">
+              <div class="sensor-card-head">
+                <div>
+                  <span class="sensor-card-type">{{ sensor.type }}</span>
+                  <h3>{{ sensor.label }}</h3>
+                </div>
+                <span class="sensor-card-status" [class.live]="sensor.hasLiveValue">
+                  {{ sensor.hasLiveValue ? 'Live' : 'Idle' }}
+                </span>
+              </div>
+
+              <strong class="sensor-card-value">{{ sensor.value }}</strong>
+
+              <div class="sensor-card-chart" aria-hidden="true">
+                @for (point of sensor.history; track $index) {
+                  <span
+                    class="sensor-card-bar"
+                    [style.height]="dashboard.getSensorChartPointHeight(point, sensor.history)"
+                  ></span>
+                }
+              </div>
+
+              <div class="sensor-card-meta">
+                <span>{{ sensor.location }}</span>
+                <span>Updated {{ sensor.updatedAt }}</span>
+              </div>
+
+              <p class="sensor-card-description">{{ sensor.description }}</p>
+            </article>
+          }
+        </div>
+      }
     </div>
 
     <div class="detail-grid">

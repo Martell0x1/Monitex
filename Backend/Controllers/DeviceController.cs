@@ -31,4 +31,11 @@ public class DeviceController : ControllerBase
     return Ok(new{message="Device Created Succefully",name=body.Device_name});
   }
 
+  [HttpGet("user/{id}")]
+  public async Task<IActionResult> GetDevicesByUserId(int id)
+  {
+    var devices = await _Service.GetDevicesByUserIdAsync(id);
+    return Ok(devices);
+  }
+
 }

@@ -12,6 +12,10 @@ import { Dashboard } from '../../dashboard';
 export class AlertsPage {
   readonly dashboard = inject(Dashboard);
 
+  get anomalyFeed() {
+    return this.dashboard.anomalyNotifications;
+  }
+
   get flaggedDevices(): DeviceDto[] {
     return this.dashboard.devices.filter((device) => {
       const tone = this.dashboard.getDeviceStatusTone(device);
@@ -20,8 +24,36 @@ export class AlertsPage {
   }
 
   get hasCriticalAlerts(): boolean {
-    return this.flaggedDevices.some(
+    return this.anomalyFeed.some((alert) => alert.severity === 'critical') || this.flaggedDevices.some(
       (device) => this.dashboard.getDeviceStatusTone(device) === 'offline'
     );
+  }
+
+  openAlertDevice(deviceLookup: string | null): void {
+    this.dashboard.selectDeviceByLookup(deviceLookup);
+  }
+
+  getSeverityTone(severity: 'info' | 'warning' | 'critical'): 'live' | 'warning' | 'offline' {
+    if (severity === 'critical') {
+      return 'offline';
+    }
+
+    if (severity === 'warning') {
+      return 'warning';
+    }
+
+    return 'live';
+  }
+
+  getSeverityLabel(severity: 'info' | 'warning' | 'critical'): string {
+    if (severity === 'critical') {
+      return 'Critical';
+    }
+
+    if (severity === 'warning') {
+      return 'Warning';
+    }
+
+    return 'Info';
   }
 }

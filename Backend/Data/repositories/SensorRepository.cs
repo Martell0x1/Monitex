@@ -61,7 +61,6 @@ public class SensorRepository : BaseNpRepository, ISensorRepository
           WHERE sensor_id = @Sensor_id");
     }
 
-
     public async Task<List<Sensor>> GetSensorsByDeviceAsync(int deviceId)
     {
         return await ExecuteQueryAsync<List<Sensor>>(async cmd =>

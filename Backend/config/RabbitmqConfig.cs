@@ -31,24 +31,63 @@ public class RabbitmqConfig : ISmartHomeConfig
         _channel = await _connection.CreateChannelAsync();
 
         var exchange = _settings.Exchange;
-        var queue = _settings.Queue;
-        var routingKey = _settings.RoutingKey;
-
-        await _channel.ExchangeDeclareAsync(
-            exchange,
-            ExchangeType.Direct,
-            durable: true
-        );
-
         await _channel.QueueDeclareAsync(
-            queue,
+            _settings.DashboardQueue,
             durable: true,
             exclusive: false,
             autoDelete: false
         );
 
-        await _channel.QueueBindAsync(queue, exchange, routingKey);
+        await _channel.QueueDeclareAsync(
+            _settings.InfluxQueue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false
+        );
 
+        await _channel.QueueDeclareAsync(
+            _settings.PythonModelQueue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false
+        );
+
+        await _channel.QueueDeclareAsync(
+            _settings.PythonResultsQueue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false
+        );
+
+        await _channel.ExchangeDeclareAsync(
+            exchange,
+            ExchangeType.Topic,
+            durable: true
+        );
+
+        await _channel.QueueBindAsync(
+            _settings.DashboardQueue,
+            exchange,
+            _settings.DashboardRoutingKey
+        );
+
+        await _channel.QueueBindAsync(
+            _settings.InfluxQueue,
+            exchange,
+            _settings.InfluxRoutingKey
+        );
+
+        await _channel.QueueBindAsync(
+            _settings.PythonModelQueue,
+            exchange,
+            _settings.PythonModelRoutingKey
+        );
+
+        await _channel.QueueBindAsync(
+            _settings.PythonResultsQueue,
+            exchange,
+            _settings.PythonResultsRoutingKey
+        );
         _logger.LogInformation("RabbitMQ connected successfully");
 
         return _channel;
@@ -57,8 +96,20 @@ public class RabbitmqConfig : ISmartHomeConfig
     public string GetExchange()
         => _settings.Exchange;
 
-    public string GetRoutingKey()
-        => _settings.RoutingKey;
-    public string GetQueue()
-        => _settings.Queue;
+    public string GetDashboardQueue()
+        => _settings.DashboardQueue;
+    public string GetInfluxQueue()
+        => _settings.InfluxQueue;
+    public string GetPythonModelQueue()
+        => _settings.PythonModelQueue;
+    public string GetPythonResultsQueue()
+        => _settings.PythonResultsQueue;
+    public string GetDashboardRoutingKey()
+        => _settings.DashboardRoutingKey;
+    public string GetInfluxRoutingKey()
+        => _settings.InfluxRoutingKey;
+    public string GetPythonModelRoutingKey()
+        => _settings.PythonModelRoutingKey;
+    public string GetPythonResultsRoutingKey()
+        => _settings.PythonResultsRoutingKey;
 }

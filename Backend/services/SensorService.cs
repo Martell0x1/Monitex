@@ -33,4 +33,25 @@ public class SensorService : ISensorService
 
         return await _sensorRepository.CreateSensorAsync(sensor);
     }
+
+    public async Task<List<SensorSummaryDto>> GetSensorsByDeviceAsync(int deviceId, int userId)
+    {
+        var device = await _deviceRepository.GetDeviceByIdForUserAsync(deviceId, userId);
+        if (device == null)
+            throw new InvalidOperationException("Device was not found for this user.");
+
+        var sensors = await _sensorRepository.GetSensorsByDeviceAsync(deviceId);
+
+        return sensors.Select(sensor => new SensorSummaryDto
+        {
+            SensorId = sensor.Sensor_id,
+            DeviceId = sensor.Device_id,
+            Name = sensor.Name,
+            Type = sensor.Type,
+            Location = sensor.Location,
+            IpAddress = sensor.IpAddress,
+            Description = sensor.Description,
+            CreatedAt = sensor.Created_at
+        }).ToList();
+    }
 }

@@ -1,4 +1,3 @@
-using System.Security.Cryptography.Xml;
 using SmartHome.Services;
 
 namespace SmartHome.Infrastructure;
@@ -6,12 +5,12 @@ namespace SmartHome.Infrastructure;
 public class MQTTtoAMQP
 {
   private readonly MQTTService _mqttService;
-  private readonly AMQPService _ampqService;
+  private readonly SensorMessageDispatcher _messageDispatcher;
 
-  public MQTTtoAMQP(MQTTService mQTTService , AMQPService aMQPService)
+  public MQTTtoAMQP(MQTTService mQTTService, SensorMessageDispatcher messageDispatcher)
   {
     _mqttService = mQTTService;
-    _ampqService = aMQPService;
+    _messageDispatcher = messageDispatcher;
   }
 
   public void start()
@@ -24,6 +23,6 @@ public class MQTTtoAMQP
 
   private async Task Transform(string payload)
   {
-    await _ampqService.PublishMessage(payload);
+    await _messageDispatcher.DispatchAsync(payload);
   }
 }

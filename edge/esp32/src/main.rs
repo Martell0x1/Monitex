@@ -12,10 +12,14 @@ mod Wifi;
 mod mqtt;
 mod ping;
 mod adc;
+mod payload;
+mod health;
 
 use Wifi::init_wifi;
 use mqtt::init_mqtt;
 use ping::check_pc;
+
+const DEVICE_NAME: &str = "esp32-1";
 
 fn main() -> Result<(), EspError> {
 
@@ -44,37 +48,56 @@ fn main() -> Result<(), EspError> {
 
     init_wifi(&mut wifi)?;
 
-    let ip_info = wifi.wifi().sta_netif().get_ip_info();
+    let ip_info = wifi.wifi().sta_netif().get_ip_info()?;
+    let ip_address = ip_info.ip.to_string();
 
-    println!("WiFi DHCP IP: {:?}", ip_info);
+    println!("WiFi DHCP IP: {}", ip_address);
 
     let mut client = init_mqtt()?;
-
-    let mut counter = 0;
+    let mut heartbeat_counter: u8 = 0;
 
     loop {
         let adc_value = ir.read()?;
-        let payload = adc_value.to_string();
+        let sensor_payload = payload::build_ldr_payload(DEVICE_NAME, adc_value, Some(&ip_address));
 
         println!(
             "Published: {:?}",
-            payload
+            sensor_payload
         );
 
-        match client.publish(
+        let sensor_publish_result = client.publish(
             "topic/test",
             esp_idf_svc::mqtt::client::QoS::AtLeastOnce,
             true,
-            &payload.as_bytes(),
-        ) {
+            &sensor_payload.as_bytes(),
+        );
 
+        match sensor_publish_result {
             Ok(_) => {}
-
             Err(e) => println!("Publish error: {:?}", e),
         }
 
-        FreeRtos::delay_ms(500);
+        heartbeat_counter = heartbeat_counter.wrapping_add(1);
 
-        counter += 1;
+        if heartbeat_counter >= 10 {
+            heartbeat_counter = 0;
+
+            let health_snapshot = health::collect(&ip_address, sensor_publish_result.is_ok());
+            let health_payload = health::build_payload(DEVICE_NAME, &health_snapshot);
+
+            println!("Health heartbeat: {:?}", health_payload);
+
+            match client.publish(
+                "topic/test",
+                esp_idf_svc::mqtt::client::QoS::AtLeastOnce,
+                true,
+                &health_payload.as_bytes(),
+            ) {
+                Ok(_) => {}
+                Err(e) => println!("Health publish error: {:?}", e),
+            }
+        }
+
+        FreeRtos::delay_ms(500);
     }
 }

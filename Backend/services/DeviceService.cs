@@ -36,6 +36,11 @@ public class DeviceService : IDeviceService
   {
     throw new NotImplementedException();
   }
+  public async Task<List<Device>> GetDevicesByUserIdAsync(int user_id)
+  {
+        var devices = await _Repository.GetDevicesByUserIdAsync(user_id);
+    return devices;
+  }
 
   public Task<bool> RemoveDeviceAsync(int id)
   {

@@ -80,6 +80,19 @@
   color: var(--text-main);
   text-align: left;
   cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.alert-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244, 162, 97, 0.28);
+  background: linear-gradient(180deg, rgba(29, 41, 63, 0.96), rgba(16, 25, 42, 0.96));
+}
+
+.anomaly-item {
+  background:
+    linear-gradient(160deg, rgba(244, 162, 97, 0.12), transparent 48%),
+    linear-gradient(180deg, rgba(18, 26, 43, 0.96), rgba(14, 22, 37, 0.96));
 }
 
 .alert-copy {

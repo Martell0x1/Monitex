@@ -14,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region WebSockets SignalR Configs
 builder.Services.AddSignalR();
-builder.Services.AddHostedService<RabbitmqConsumer>();
 #endregion
 
 #region Kestrel Port Configuration
@@ -31,6 +30,7 @@ builder.Services.AddSingleton<PostgresDbContext>();
 #endregion
 
 #region Services
+
 builder.Services.AddScoped<IUserRepository , UserRepository>();
 builder.Services.AddScoped<IDeviceRepository,DeviceRepository>();
 builder.Services.AddScoped<ISensorRepository,SensorRepository>();
@@ -42,7 +42,12 @@ builder.Services.AddSingleton<MQTTtoAMQP>();
 builder.Services.AddSingleton<MosquittoConfig>();
 builder.Services.AddSingleton<MQTTService>();
 builder.Services.AddSingleton<RabbitmqConfig>();
+builder.Services.AddSingleton<InfluxAmqpConfig>();
 builder.Services.AddSingleton<AMQPService>();
+builder.Services.AddSingleton<SensorMessageDispatcher>();
+builder.Services.AddSingleton<InfluxDBConfiguration>();
+builder.Services.AddSingleton<InfluxService>();
+builder.Services.AddSingleton<DeviceHealthService>();
 
 #endregion
 
@@ -67,6 +72,24 @@ builder.Services.AddAuthentication(ops =>
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+    ops.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken =
+                context.Request.Query["access_token"];
+
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken)
+                && path.StartsWithSegments("/sensorHub"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 builder.Services.AddAuthorization();
@@ -106,6 +129,14 @@ builder.Services.Configure<RabbitMqSettings>(
   builder.Configuration.GetSection("RabbitMq")
 );
 
+builder.Services.Configure<InfluxPipelineSettings>(
+  builder.Configuration.GetSection("InfluxPipeline")
+);
+#region test region
+builder.Services.AddHostedService<AMQPtoInfluxConsumer>();
+builder.Services.AddHostedService<AMQPtoSignalRConsumer>();
+builder.Services.AddHostedService<AMQPtoAnomalySignalRConsumer>();
+#endregion
 var app = builder.Build();
 var mqtt = app.Services.GetRequiredService<MQTTService>();
 await mqtt.Listen();

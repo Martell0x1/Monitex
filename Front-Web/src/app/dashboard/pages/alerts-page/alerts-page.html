@@ -2,20 +2,20 @@
   <div class="alerts-summary">
     <article class="summary-card">
       <span class="summary-label">Open Alerts</span>
-      <strong>{{ dashboard.alertCount + dashboard.offlineDeviceCount }}</strong>
-      <span class="summary-meta">Warning and offline devices</span>
+      <strong>{{ dashboard.openAlertCount }}</strong>
+      <span class="summary-meta">Realtime anomalies plus warning and offline devices</span>
     </article>
 
     <article class="summary-card">
       <span class="summary-label">Critical State</span>
       <strong>{{ hasCriticalAlerts ? 'Yes' : 'No' }}</strong>
-      <span class="summary-meta">Offline devices needing action</span>
+      <span class="summary-meta">Critical anomalies or offline devices needing action</span>
     </article>
 
     <article class="summary-card">
-      <span class="summary-label">Connection</span>
-      <strong>{{ dashboard.connectionState }}</strong>
-      <span class="summary-meta">Current streaming link status</span>
+      <span class="summary-label">Live Anomalies</span>
+      <strong>{{ dashboard.activeAnomalyCount }}</strong>
+      <span class="summary-meta">Notifications received from the anomaly queue</span>
     </article>
   </div>
 
@@ -23,17 +23,60 @@
     <div class="page-card-head">
       <div>
         <p class="eyebrow">Alert Feed</p>
+        <h2>Realtime anomaly notifications</h2>
+      </div>
+      <span class="page-caption">Messages from RabbitMQ are pushed here as soon as the backend receives them.</span>
+    </div>
+
+    @if (!anomalyFeed.length) {
+      <p class="page-message">No anomaly notifications yet. Incoming queue events will appear here live.</p>
+    } @else {
+      <div class="alert-list">
+        @for (alert of anomalyFeed; track alert.deviceId + '-' + alert.updatedAtMs + '-' + alert.title) {
+          <button class="alert-item anomaly-item" (click)="openAlertDevice(alert.deviceId || alert.deviceName)">
+            <div class="alert-top">
+              <strong>{{ alert.title }}</strong>
+              <span [class]="'device-status tone-' + getSeverityTone(alert.severity)">
+                {{ getSeverityLabel(alert.severity) }}
+              </span>
+            </div>
+
+            <p class="alert-copy">
+              {{ alert.message }}
+            </p>
+
+            <div class="alert-meta">
+              <span>{{ alert.deviceName || 'Unknown device' }}</span>
+              <span>{{ alert.sensorName || alert.sensorType || 'Unknown sensor' }}</span>
+              <span>{{ alert.updatedAt }}</span>
+              @if (alert.value !== null) {
+                <span>Value: {{ alert.value }}</span>
+              }
+              @if (alert.threshold !== null) {
+                <span>Threshold: {{ alert.threshold }}</span>
+              }
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="page-card">
+    <div class="page-card-head">
+      <div>
+        <p class="eyebrow">Operational Alerts</p>
         <h2>Devices needing attention</h2>
       </div>
       <span class="page-caption">Warnings and offline units are collected here for fast review.</span>
     </div>
 
     @if (dashboard.isLoadingDevices) {
-      <p class="page-message">Loading alerts...</p>
+      <p class="page-message">Loading device alerts...</p>
     } @else if (dashboard.deviceLoadError) {
       <p class="page-message">{{ dashboard.deviceLoadError }}</p>
     } @else if (!flaggedDevices.length) {
-      <p class="page-message">No active alerts. All monitored devices look stable.</p>
+      <p class="page-message">No device-status alerts. All monitored devices look stable.</p>
     } @else {
       <div class="alert-list">
         @for (device of flaggedDevices; track device.id) {

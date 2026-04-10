@@ -25,6 +25,33 @@
   gap: 10px;
 }
 
+.overview-card-health.tone-healthy,
+.signal-copy.tone-healthy,
+.health-stage.tone-healthy {
+  border-color: rgba(52, 211, 153, 0.28);
+  background:
+    linear-gradient(180deg, rgba(16, 185, 129, 0.14), rgba(15, 23, 42, 0.78)),
+    rgba(255, 255, 255, 0.03);
+}
+
+.overview-card-health.tone-warning,
+.signal-copy.tone-warning,
+.health-stage.tone-warning {
+  border-color: rgba(250, 204, 21, 0.28);
+  background:
+    linear-gradient(180deg, rgba(245, 158, 11, 0.14), rgba(15, 23, 42, 0.78)),
+    rgba(255, 255, 255, 0.03);
+}
+
+.overview-card-health.tone-critical,
+.signal-copy.tone-critical,
+.health-stage.tone-critical {
+  border-color: rgba(248, 113, 113, 0.28);
+  background:
+    linear-gradient(180deg, rgba(239, 68, 68, 0.16), rgba(15, 23, 42, 0.78)),
+    rgba(255, 255, 255, 0.03);
+}
+
 .overview-label,
 .detail-label,
 .zone-label,
@@ -109,13 +136,13 @@
 
 .signal-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   align-items: stretch;
 }
 
 .signal-copy,
-.telemetry-visual,
+.sensor-stage,
 .detail-card,
 .zone-card,
 .device-item {
@@ -132,6 +159,10 @@
   gap: 12px;
 }
 
+.signal-copy-compact {
+  align-items: flex-start;
+}
+
 .signal-value {
   font-size: clamp(3rem, 5vw, 5.4rem);
   line-height: 0.95;
@@ -139,25 +170,203 @@
   text-shadow: 0 0 24px rgba(244, 162, 97, 0.22);
 }
 
-.telemetry-visual {
-  min-height: 220px;
+.signal-inline-value {
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.sensor-stage {
+  padding: 20px;
   border-radius: 24px;
-  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.health-stage {
+  border: 1px solid rgba(160, 167, 192, 0.14);
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.health-stage-head,
+.health-metrics {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.health-stage-head h3 {
+  margin: 6px 0 0;
+}
+
+.health-score {
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1;
+  color: #ffffff;
+}
+
+.health-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.health-metric {
+  border: 1px solid rgba(160, 167, 192, 0.12);
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.health-metric-label,
+.health-reason {
+  color: var(--text-soft);
+}
+
+.health-metric-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.health-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.health-reason {
+  margin: 0;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.health-reason::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+}
+
+.sensor-stage-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sensor-stage-head h3 {
+  margin: 6px 0 0;
+}
+
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sensor-card {
+  border: 1px solid rgba(160, 167, 192, 0.12);
+  border-radius: 18px;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--sensor-accent) 15%, transparent), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.045);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sensor-card-head,
+.sensor-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sensor-card-head h3 {
+  margin: 6px 0 0;
+}
+
+.sensor-card-type,
+.sensor-card-meta,
+.sensor-card-description,
+.sensor-stage-message {
+  color: var(--text-soft);
+}
+
+.sensor-card-type {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.sensor-card-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: var(--text-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.sensor-card-status.live {
+  border-color: color-mix(in srgb, var(--sensor-accent) 45%, transparent);
+  color: var(--sensor-accent);
+}
+
+.sensor-card-value {
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+  color: #ffffff;
+}
+
+.sensor-card-chart {
+  min-height: 130px;
+  border-radius: 16px;
+  padding: 14px 10px;
   display: flex;
   align-items: end;
-  gap: 10px;
+  gap: 8px;
   background:
-    linear-gradient(180deg, rgba(103, 111, 157, 0.14), rgba(244, 162, 97, 0.05)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(15, 23, 42, 0.16)),
     rgba(255, 255, 255, 0.03);
 }
 
-.telemetry-bar {
+.sensor-card-bar {
   flex: 1;
-  min-width: 10px;
+  min-width: 8px;
   border-radius: 999px 999px 4px 4px;
-  background: linear-gradient(180deg, #f9b17a 0%, #f4a261 48%, #676f9d 100%);
-  box-shadow: 0 0 18px rgba(244, 162, 97, 0.2);
-  animation: rise 0.7s ease;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--sensor-accent) 88%, white),
+    color-mix(in srgb, var(--sensor-accent) 82%, black)
+  );
+  box-shadow: 0 0 16px color-mix(in srgb, var(--sensor-accent) 28%, transparent);
+}
+
+.sensor-card-meta {
+  font-size: 12px;
+}
+
+.sensor-card-description,
+.sensor-stage-message {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .detail-grid,
@@ -245,7 +454,9 @@
 @media (max-width: 1180px) {
   .overview-grid,
   .detail-grid,
-  .zone-grid {
+  .zone-grid,
+  .sensor-grid,
+  .health-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -264,13 +475,19 @@
 
   .overview-grid,
   .detail-grid,
-  .zone-grid {
+  .zone-grid,
+  .sensor-grid,
+  .health-metrics {
     grid-template-columns: 1fr;
   }
 
   .hero-header,
   .device-item-top,
-  .device-footer {
+  .device-footer,
+  .health-stage-head,
+  .sensor-stage-head,
+  .sensor-card-head,
+  .sensor-card-meta {
     flex-direction: column;
     align-items: flex-start;
   }
