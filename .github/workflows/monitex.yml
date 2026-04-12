@@ -27,6 +27,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Debug repo tree
+        run: ls -R
 
       - name: Install dependencies
         run: |
