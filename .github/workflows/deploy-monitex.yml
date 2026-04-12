@@ -3,7 +3,7 @@ name: Deploy Angular Static Site
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - "monitex.io/Monitex-Front-End/**"
 
