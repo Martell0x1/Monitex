@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - "monitex.io/Monitex-frontend/**"
+      - "monitex.io/Monitex-Front-End/**"
   workflow_dispatch:
 
 permissions:
