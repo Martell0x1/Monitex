@@ -167,7 +167,7 @@ Monitex is organized as a multi-layer system:
 
 ### Architecture Diagram
 <div align="center">
-	<img src="assets/arch.png" alt="VISION Gate Logo" width="200"/>
+	<img src="assets/arch.png" alt="VISION Gate Logo"/>
 </div> 
 
   
