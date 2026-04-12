@@ -27,23 +27,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Debug repo tree
-        run: ls -R
 
       - name: Install dependencies
         run: |
-          cd monitex.io/Monitex-frontend
+          cd monitex.io/Monitex-Front-End
           npm install
 
       - name: Build Angular app
         run: |
-          cd monitex.io/Monitex-frontend
+          cd monitex.io/Monitex-Front-End
           npm run build -- --configuration production --base-href "/monitex.io/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: monitex.io/Monitex-frontend/dist
+          path: monitex.io/Monitex-Front-End/dist/Monitex-Front-End/browser
 
   deploy:
     needs: build
