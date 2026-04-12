@@ -5,9 +5,7 @@ on:
     branches:
       - master
     paths:
-      - "monitex.io/Monitex-Front-End/**"
-
-permissions:
+      - "monitex.io/Monitex-frontend"
   contents: read
   pages: write
   id-token: write
