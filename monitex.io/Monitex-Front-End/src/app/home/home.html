@@ -1,0 +1,213 @@
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">
+    <img src="monitex_cropped_r.png" alt="Monitex logo" />
+  </div>
+  <div class="nav-links">
+    <a href="https://github.com/Martell0x1/Monitex" target="_blank" rel="noreferrer">Docs</a>
+    <a routerLink="/download">Download</a>
+    <a href="https://github.com/Martell0x1/Monitex" target="_blank" rel="noreferrer">GitHub</a>
+  </div>
+  <button class="nav-btn" routerLink="/download">Install Monitex</button>
+</div>
+
+<!-- HERO - Most important: First impression & call to action -->
+<section class="hero">
+  <img src="smarthome-heru.png" class="hero-bg-img" alt="Monitex smart home dashboard preview" />
+  <div class="hero-overlay-gradient"></div>
+
+  <div class="hero-left">
+    <h1>
+      Self-Hosted Monitoring
+      <br />
+      <span>For Modern Devices & Sensors</span>
+    </h1>
+    <p>
+      Monitex is a self-hosted SaaS platform for monitoring connected devices, live sensor
+      readings, and operational health from one refined dashboard. Keep your infrastructure
+      private, your telemetry visible, and your teams in control.
+    </p>
+    <div class="hero-buttons">
+      <button class="primary-btn" routerLink="/download">Start Monitoring Smarter</button>
+      <button class="secondary-btn" routerLink="/download">Explore the Platform</button>
+    </div>
+  </div>
+
+  <!-- SENSOR OVERLAY -->
+  <div class="hero-overlay">
+    <div class="sensor-marker temp temp-marker">
+      <div class="marker-core">
+        <div class="marker-dot"></div>
+        <div class="marker-ring"></div>
+        <div class="marker-ring marker-ring-delayed"></div>
+      </div>
+      <div class="marker-line"></div>
+      <div class="marker-label">
+        <strong>temp_sensor</strong>
+        <span>21.8 C stable</span>
+      </div>
+    </div>
+
+    <div class="sensor-marker humidity humidity-marker">
+      <div class="marker-core">
+        <div class="marker-dot"></div>
+        <div class="marker-ring"></div>
+        <div class="marker-ring marker-ring-delayed"></div>
+      </div>
+      <div class="marker-line"></div>
+      <div class="marker-label">
+        <strong>humidity_sensor</strong>
+        <span>44% balanced</span>
+      </div>
+    </div>
+
+    <div class="sensor-marker motion motion-marker">
+      <div class="marker-core">
+        <div class="marker-dot"></div>
+        <div class="marker-ring"></div>
+        <div class="marker-ring marker-ring-delayed"></div>
+      </div>
+      <div class="marker-line"></div>
+      <div class="marker-label">
+        <strong>motion_sensor</strong>
+        <span>zone secure</span>
+      </div>
+    </div>
+
+    <div class="sensor-marker voltage voltage-marker">
+      <div class="marker-core">
+        <div class="marker-dot"></div>
+        <div class="marker-ring"></div>
+        <div class="marker-ring marker-ring-delayed"></div>
+      </div>
+      <div class="marker-line"></div>
+      <div class="marker-label">
+        <strong>voltage_sensor</strong>
+        <span>240V nominal</span>
+      </div>
+    </div>
+
+    <div class="sensor-marker air-quality air-quality-marker">
+      <div class="marker-core">
+        <div class="marker-dot"></div>
+        <div class="marker-ring"></div>
+        <div class="marker-ring marker-ring-delayed"></div>
+      </div>
+      <div class="marker-line"></div>
+      <div class="marker-label">
+        <strong>air_quality_sensor</strong>
+        <span>412 ppm clean</span>
+      </div>
+    </div>
+
+    <div class="sensor-marker light light-marker">
+      <div class="marker-core">
+        <div class="marker-dot"></div>
+        <div class="marker-ring"></div>
+        <div class="marker-ring marker-ring-delayed"></div>
+      </div>
+      <div class="marker-line"></div>
+      <div class="marker-label">
+        <strong>light_sensor</strong>
+        <span>420 lux active</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES - Core value proposition: What Monitex does -->
+<section class="features-section">
+  <h2>Why Monitex?</h2>
+  <div class="features">
+    <div class="feature-card">
+      <h3>Self-Hosted First</h3>
+      <p>Run Monitex locally or deploy it to your own infrastructure. Your data stays yours.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Real-Time Sensors</h3>
+      <p>Stream temperature, humidity, motion and voltage readings instantly.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Device Automation</h3>
+      <p>Trigger alerts and automate workflows when sensor thresholds change.</p>
+    </div>
+  </div>
+</section>
+
+<!-- USECASES - Practical applications: Who it's for -->
+<section class="usecases">
+  <h2>Built For Real Monitoring Scenarios</h2>
+  <div class="usecase-grid">
+    <div class="usecase-card">
+      <h3>Smart Homes</h3>
+      <p>Track motion, temperature, humidity and voltage sensors across rooms.</p>
+    </div>
+    <div class="usecase-card">
+      <h3>Server Rooms</h3>
+      <p>Monitor environmental safety conditions and receive alerts instantly.</p>
+    </div>
+    <div class="usecase-card">
+      <h3>Industrial Labs</h3>
+      <p>Collect telemetry data from equipment and automate workflows.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TRUSTED - Social proof: Who uses it -->
+<section class="trusted">
+  <h3>Trusted by developers building smart environments</h3>
+  <div class="trusted-logos">
+    <span>ESP32</span>
+    <span>Arduino</span>
+    <span>Raspberry Pi</span>
+    <span>MQTT</span>
+    <span>Docker</span>
+  </div>
+</section>
+
+<!-- TESTIMONIALS - Social proof: What users say -->
+<section class="testimonials">
+  <h2>What Developers Say</h2>
+  <div class="testimonial-grid">
+    <div class="testimonial">
+      <p>
+        "Exactly what I needed to monitor my ESP32 sensors locally without sending data to cloud
+        providers."
+      </p>
+      <span>— Embedded Developer</span>
+    </div>
+    <div class="testimonial">
+      <p>"Clean interface, fast setup and works perfectly inside Docker."</p>
+      <span>— DevOps Engineer</span>
+    </div>
+    <div class="testimonial">
+      <p>"Finally a lightweight alternative to heavy monitoring platforms."</p>
+      <span>— IoT Research Student</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT - Background story: The why behind Monitex -->
+<section class="about">
+  <h2>About Monitex</h2>
+  <p>
+    Monitex is a self-hosted monitoring dashboard designed for developers, engineers and
+    smart-environment builders who want full control over their sensor data. Run it locally.
+    Deploy it to your infrastructure. Extend it however you want.
+  </p>
+  <p>
+    Built with a developer-first philosophy — Monitex integrates easily with ESP devices, MQTT
+    brokers and custom hardware sensors.
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">Monitex © 2026</div>
+  <div class="footer-links">
+    <a href="#">Docs</a>
+    <a href="#">GitHub</a>
+    <a href="#">License</a>
+    <a href="#">Privacy</a>
+  </div>
+</footer>

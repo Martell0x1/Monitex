@@ -1,0 +1,105 @@
+<div class="download-page">
+  <header class="download-navbar">
+    <a class="brand" routerLink="/">
+      <img src="monitex_cropped_r.png" alt="Monitex logo" />
+      <span>Monitex</span>
+    </a>
+
+    <nav class="download-nav-links">
+      <a routerLink="/">Home</a>
+      <a class="active-link" routerLink="/download">Install</a>
+      <a href="#installer-steps">Steps</a>
+    </nav>
+
+    <a class="back-home-btn" routerLink="/">Back to overview</a>
+  </header>
+
+  <section class="download-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Installation flow</p>
+      <h1>Install Monitex from the source repository</h1>
+      <p class="hero-description">
+        Clone the official Monitex repository, enter the project folder, and launch the installer
+        script to start provisioning the platform locally.
+      </p>
+
+      <div class="cta-row">
+        <a class="primary-cta" href="#installer-steps">Start installation</a>
+        <a class="secondary-cta" [href]="repoUrl" target="_blank" rel="noreferrer">Open repo</a>
+      </div>
+    </div>
+
+    <aside class="release-highlight">
+      <div class="release-highlight-header">
+        <span>Repository</span>
+        <strong>Monitex</strong>
+      </div>
+      <p class="highlight-copy">
+        The installer is launched from the repository root with <strong>./installer/installer.sh</strong>.
+      </p>
+      <a class="repo-link" [href]="repoUrl" target="_blank" rel="noreferrer">{{ repoUrl }}</a>
+    </aside>
+  </section>
+
+  <section class="release-section" id="installer-steps">
+    <div class="section-heading">
+      <p class="eyebrow">Installer steps</p>
+      <h2>Clone the repo and run the installer script</h2>
+      <p>
+        Follow the exact sequence below to get Monitex ready on your machine.
+      </p>
+    </div>
+
+    <div class="install-layout">
+      <div class="install-steps">
+        @for (step of installSteps; track step.title; let index = $index) {
+          <article class="install-card">
+            <div class="card-topline">
+              <span class="badge">Step {{ index + 1 }}</span>
+              <span class="format">Install</span>
+            </div>
+
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+            <code>{{ step.command }}</code>
+          </article>
+        }
+      </div>
+
+      <aside class="checklist-panel">
+        <p class="eyebrow">Before you start</p>
+        <h3>Requirements</h3>
+
+        <div class="checklist">
+          @for (requirement of requirements; track requirement.name) {
+            <article class="checklist-item">
+              <strong>{{ requirement.name }}</strong>
+              <p>{{ requirement.description }}</p>
+            </article>
+          }
+        </div>
+
+        <div class="terminal-note">
+          <p class="eyebrow">Script command</p>
+          <code>./installer/installer.sh</code>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="setup-section">
+    <div class="section-heading compact">
+      <p class="eyebrow">After install</p>
+      <h2>Bring Monitex online</h2>
+    </div>
+
+    <div class="setup-steps">
+      @for (note of postInstallNotes; track note; let index = $index) {
+        <div class="setup-step">
+          <span>{{ index + 1 }}</span>
+          <p>{{ note }}</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>

@@ -1,0 +1,379 @@
+:host {
+  display: block;
+}
+
+.download-page {
+  min-height: 100vh;
+  color: #f3f5ff;
+  background:
+    radial-gradient(circle at top left, rgba(244, 162, 97, 0.22), transparent 30%),
+    radial-gradient(circle at top right, rgba(69, 179, 157, 0.18), transparent 26%),
+    linear-gradient(180deg, #131a31 0%, #0e1427 100%);
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.download-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 6%;
+  background: rgba(10, 14, 29, 0.72);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.brand img {
+  height: 42px;
+}
+
+.download-nav-links {
+  display: flex;
+  gap: 26px;
+}
+
+.download-nav-links a,
+.back-home-btn,
+.primary-cta,
+.secondary-cta {
+  text-decoration: none;
+}
+
+.download-nav-links a {
+  color: #c8d0ec;
+  transition: color 0.2s ease;
+}
+
+.download-nav-links a:hover,
+.download-nav-links .active-link {
+  color: #f4a261;
+}
+
+.back-home-btn,
+.primary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: #f4a261;
+  color: #171e35;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.back-home-btn {
+  padding: 12px 20px;
+}
+
+.back-home-btn:hover,
+.primary-cta:hover {
+  background: #ffb278;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(244, 162, 97, 0.25);
+}
+
+.download-hero,
+.release-section,
+.setup-section {
+  padding: 56px 6% 40px;
+}
+
+.download-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+  gap: 36px;
+  align-items: center;
+  padding-top: 72px;
+}
+
+.eyebrow {
+  margin-bottom: 16px;
+  color: #7ad9c2;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.84rem;
+}
+
+.hero-copy h1,
+.section-heading h2,
+.install-card h3,
+.checklist-panel h3,
+.terminal-note code {
+  margin: 0;
+  line-height: 1.05;
+}
+
+.hero-copy h1 {
+  max-width: 14ch;
+  font-size: clamp(2.8rem, 7vw, 5.4rem);
+}
+
+.hero-description,
+.section-heading p,
+.setup-step p,
+.install-card p,
+.checklist-item p,
+.highlight-copy {
+  color: #b7c0df;
+  line-height: 1.7;
+}
+
+.hero-description {
+  max-width: 60ch;
+  margin: 24px 0 0;
+  font-size: 1.04rem;
+}
+
+.cta-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.primary-cta,
+.secondary-cta {
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.secondary-cta {
+  color: #edf1ff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.secondary-cta:hover {
+  border-color: rgba(244, 162, 97, 0.6);
+  background: rgba(244, 162, 97, 0.08);
+}
+
+.release-highlight {
+  padding: 28px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(18, 28, 52, 0.92), rgba(14, 21, 40, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.release-highlight-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.release-highlight-header span {
+  color: #92a0ce;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+}
+
+.release-highlight-header strong {
+  font-size: 1.6rem;
+}
+
+.repo-link {
+  display: inline-block;
+  margin-top: 14px;
+  color: #9ae6d4;
+  word-break: break-all;
+}
+
+.install-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.section-heading {
+  max-width: 760px;
+}
+
+.section-heading.compact {
+  margin-bottom: 28px;
+}
+
+.card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.badge,
+.format {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.badge {
+  color: #101728;
+  background: #7ad9c2;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.format {
+  color: #93a0cb;
+}
+
+.install-steps,
+.checklist-panel,
+.setup-step {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(18, 25, 46, 0.76);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.install-steps {
+  padding: 28px;
+  border-radius: 28px;
+}
+
+.install-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  align-content: start;
+}
+
+.install-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(12, 19, 37, 0.7);
+}
+
+.install-card h3 {
+  font-size: 1.35rem;
+}
+
+.install-card code,
+.terminal-note code {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(122, 217, 194, 0.08);
+  color: #90f0d6;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.checklist-panel {
+  padding: 28px;
+  border-radius: 28px;
+  align-self: start;
+}
+
+.checklist {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.checklist-item {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.checklist-item strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.terminal-note {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(244, 162, 97, 0.08);
+  border: 1px solid rgba(244, 162, 97, 0.18);
+}
+
+.setup-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.setup-step {
+  padding: 22px;
+  border-radius: 22px;
+}
+
+.setup-step span {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: rgba(244, 162, 97, 0.16);
+  color: #ffc18b;
+  font-weight: 800;
+}
+
+@media (max-width: 960px) {
+  .download-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .install-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .download-navbar {
+    position: static;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .download-nav-links {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .download-hero,
+  .release-section,
+  .setup-section {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .hero-copy h1 {
+    max-width: none;
+  }
+
+  .release-highlight,
+  .install-steps,
+  .checklist-panel {
+    padding: 22px;
+  }
+}
