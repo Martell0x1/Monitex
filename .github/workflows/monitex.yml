@@ -36,8 +36,8 @@ jobs:
       - name: Build Angular app
         run: |
           cd monitex.io/Monitex-Front-End
-          npm run build -- --configuration production --base-href "/monitex.io/"
-
+          npm run build -- --configuration production --base-href "./"
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
