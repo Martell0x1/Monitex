@@ -60,6 +60,12 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": [
+              "frontend",
+              "monitex.local"
+            ]
+          },
           "configurations": {
             "production": {
               "buildTarget": "smart_home:build:production"

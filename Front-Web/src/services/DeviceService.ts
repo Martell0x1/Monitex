@@ -9,7 +9,7 @@ import { AuthService } from './AuthService';
   providedIn: 'root',
 })
 export class DeviceService {
-  private apiBase = 'http://localhost:5020/api';
+  private apiBase = '/api';
 
   constructor(
     private http: HttpClient,

@@ -10,7 +10,7 @@ import RegiterDTO from "../DTOs/RegisterDTO";
 @Injectable({ providedIn: "root" })
 export class AuthService {
 
-  private api = "http://localhost:5020/api/auth/";
+  private api = "/api/auth/";
   private tokenKey = "monitex_token";
   private userStateKey = "monitex_user_state";
 

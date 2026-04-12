@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BROKER="${BROKER:-localhost}"
+BROKER="${BROKER:-monitex.local}"
 PORT="${PORT:-1883}"
 TOPIC="${TOPIC:-topic/test}"
 DEVICE="${DEVICE:-esp32-1}"

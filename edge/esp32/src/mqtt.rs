@@ -6,15 +6,22 @@ use esp_idf_sys::EspError;
 
 use std::sync::{Arc, Mutex};
 
+use crate::dns::resolve_mdns;
+
+
 pub fn init_mqtt() -> Result<EspMqttClient<'static>, EspError> {
 
     let config = MqttClientConfiguration {
         client_id: "esp_client".into(),
         ..Default::default()
     };
+    let ip = resolve_mdns("monitex")
+    .unwrap();
+
+    let broker = format!("mqtt://{}:1883", ip);
 
     let (mut client, mut conn) =
-        EspMqttClient::new("mqtt://192.168.1.2:1883", &config)?;
+        EspMqttClient::new(&broker, &config)?;
 
     let connected = Arc::new(Mutex::new(false));
     let connected_clone = connected.clone();

@@ -311,7 +311,7 @@ export class Dashboard implements OnInit, OnDestroy {
     }
 
     this.connection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5020/sensorHub',{
+      .withUrl('http://monitex.local:5020/sensorHub',{
         accessTokenFactory: () => token
       })
       .configureLogging(LogLevel.Information)

@@ -9,7 +9,7 @@ import { AuthService } from './AuthService';
   providedIn: 'root',
 })
 export class SensorService {
-  private api = 'http://localhost:5020/api/sensors';
+  private api = '/api/sensors';
 
   constructor(
     private http: HttpClient,

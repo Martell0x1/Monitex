@@ -14,6 +14,7 @@ mod ping;
 mod adc;
 mod payload;
 mod health;
+mod dns;
 
 use Wifi::init_wifi;
 use mqtt::init_mqtt;

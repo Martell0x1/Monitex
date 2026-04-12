@@ -111,7 +111,14 @@ builder.Services.AddCors(opts =>
 
   opts.AddPolicy("AllowDashboard",policy =>
   {
-    policy.WithOrigins("http://localhost:4200")
+    policy.WithOrigins("http://monitex.local:4200")
+      .AllowAnyHeader()
+      .AllowAnyMethod()
+      .AllowCredentials();
+  });
+  opts.AddPolicy("AllowDashboard",policy =>
+  {
+    policy.WithOrigins("http://monitex.local")
       .AllowAnyHeader()
       .AllowAnyMethod()
       .AllowCredentials();
