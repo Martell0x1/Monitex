@@ -21,10 +21,12 @@ public class SensorsController : ControllerBase
     [HttpGet("device/{deviceId:int}")]
     public async Task<IActionResult> GetSensorsByDevice(int deviceId)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        var userIdClaim = User.FindFirst("userId")?.Value
+            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("nameid")?.Value
             ?? User.FindFirst("sub")?.Value;
 
-        if (!int.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId) || userId <= 0)
             return Unauthorized(new { message = "Invalid user token" });
 
         try
@@ -41,10 +43,12 @@ public class SensorsController : ControllerBase
     [HttpPost("bulk")]
     public async Task<IActionResult> RegisterSensors([FromBody] List<CreateSensorDto> sensors)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        var userIdClaim = User.FindFirst("userId")?.Value
+            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? User.FindFirst("nameid")?.Value
             ?? User.FindFirst("sub")?.Value;
 
-        if (!int.TryParse(userIdClaim, out var userId))
+        if (!int.TryParse(userIdClaim, out var userId) || userId <= 0)
             return Unauthorized(new { message = "Invalid user token" });
 
         if (sensors == null || sensors.Count == 0)

@@ -52,8 +52,24 @@ export class AuthService {
       this.saveToken(token);
     }
 
-    this.saveUserState(response, token);
-    this.router.navigate([this.resolvePostLoginRoute()]);
+    // Prefer JWT claims (hasDevices / hasSensors) over a stale local cache.
+    const state = this.extractUserState(response, token ?? this.getToken());
+    this.setOnboardingFlags(state.hasDevices, state.hasSensors);
+    void this.router.navigateByUrl(this.resolvePostLoginRoute());
+  }
+
+  /**
+   * New accounts always start onboarding at add-device.
+   */
+  handleRegisterSuccess(response: any): void {
+    const token = this.extractToken(response);
+
+    if (token) {
+      this.saveToken(token);
+    }
+
+    this.setOnboardingFlags(false, false);
+    void this.router.navigateByUrl('/add-device');
   }
 
   /*
@@ -127,24 +143,13 @@ export class AuthService {
   private isTokenExpired(
     token: string
   ): boolean {
+    const payload = this.decodeTokenPayload(token);
 
-    try {
-
-      const payload =
-        JSON.parse(
-          atob(token.split(".")[1])
-        );
-
-      return (
-        payload.exp * 1000
-        < Date.now()
-      );
-
-    } catch {
-
+    if (!payload?.exp) {
       return true;
-
     }
+
+    return payload.exp * 1000 < Date.now();
   }
 
   /*
@@ -154,27 +159,28 @@ export class AuthService {
   */
 
   getUserId(): number | null {
+    const token = this.getToken();
 
-    const token =
-      this.getToken();
-
-    if (!token)
+    if (!token) {
       return null;
-
-    try {
-
-      const payload =
-        JSON.parse(
-          atob(token.split(".")[1])
-        );
-
-      return payload.userId;
-
-    } catch {
-
-      return null;
-
     }
+
+    const payload = this.decodeTokenPayload(token);
+
+    if (!payload) {
+      return null;
+    }
+
+    const rawId =
+      payload.userId ??
+      payload.nameid ??
+      payload.sub ??
+      payload[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ];
+
+    const parsed = Number(rawId);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
   }
 
   /*
@@ -184,29 +190,60 @@ export class AuthService {
   */
 
   redirectIfLoggedIn(): void {
-
     if (this.isLoggedIn()) {
-
-      this.router.navigate(
-        [this.resolvePostLoginRoute()]
-      );
-
+      void this.router.navigateByUrl(this.resolvePostLoginRoute());
     }
-
   }
 
+  /**
+   * Post auth routing:
+   * - no devices → /add-device
+   * - devices but no sensors → /add-sensors
+   * - both → /dashboard
+   */
   resolvePostLoginRoute(): string {
-    const state = this.getStoredUserState();
+    const state = this.getOnboardingState();
 
-    if (state.hasDevices && state.hasSensors) {
-      return "/dashboard";
+    if (!state.hasDevices) {
+      return '/add-device';
     }
 
-    if (state.hasDevices) {
-      return "/add-sensors";
+    if (!state.hasSensors) {
+      return '/add-sensors';
     }
 
-    return "/add-device";
+    return '/dashboard';
+  }
+
+  continueOnboardingAfterDevice(): void {
+    this.markHasDevices();
+    void this.router.navigateByUrl('/add-sensors');
+  }
+
+  continueOnboardingAfterSensors(): void {
+    this.setOnboardingFlags(true, true);
+    void this.router.navigateByUrl('/dashboard');
+  }
+
+  getOnboardingState(): { hasDevices: boolean; hasSensors: boolean } {
+    return this.getStoredUserState();
+  }
+
+  setOnboardingFlags(hasDevices: boolean, hasSensors: boolean): void {
+    localStorage.setItem(
+      this.userStateKey,
+      JSON.stringify({ hasDevices, hasSensors })
+    );
+  }
+
+  markHasDevices(): void {
+    const state = this.getOnboardingState();
+    this.setOnboardingFlags(true, state.hasSensors);
+  }
+
+  markHasSensors(): void {
+    const state = this.getOnboardingState();
+    this.setOnboardingFlags(state.hasDevices, true);
   }
 
   private extractToken(response: any): string | null {
@@ -220,15 +257,6 @@ export class AuthService {
     return typeof possibleToken === "string" && possibleToken.trim()
       ? possibleToken
       : null;
-  }
-
-  private saveUserState(response: any, token: string | null): void {
-    const state = this.extractUserState(response, token);
-
-    localStorage.setItem(
-      this.userStateKey,
-      JSON.stringify(state)
-    );
   }
 
   private getStoredUserState(): { hasDevices: boolean; hasSensors: boolean } {
@@ -341,20 +369,33 @@ export class AuthService {
     response: any,
     payload: any
   ): any[] {
+    // JWT claims are the source of truth from login/register.
     return [
+      payload,
       response,
       response?.data,
       response?.user,
       response?.profile,
-      payload,
     ];
   }
 
   private decodeTokenPayload(token: string): any | null {
     try {
-      return JSON.parse(
-        atob(token.split(".")[1])
+      const segment = token.split(".")[1];
+
+      if (!segment) {
+        return null;
+      }
+
+      const base64 = segment
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+      const padded = base64.padEnd(
+        base64.length + ((4 - (base64.length % 4)) % 4),
+        "="
       );
+
+      return JSON.parse(atob(padded));
     } catch {
       return null;
     }

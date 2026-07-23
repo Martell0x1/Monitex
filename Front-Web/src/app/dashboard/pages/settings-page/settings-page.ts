@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Dashboard } from '../../dashboard';
+import { AuthService } from '../../../../services/AuthService';
 
 @Component({
   selector: 'app-settings-page',
@@ -11,4 +12,9 @@ import { Dashboard } from '../../dashboard';
 })
 export class SettingsPage {
   readonly dashboard = inject(Dashboard);
+  private readonly authService = inject(AuthService);
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

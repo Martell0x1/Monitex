@@ -1,53 +1,65 @@
-<section class = "login">
+<section class="login">
   <app-notification></app-notification>
   <div class="header">
-    <img src="monitex_cropped_r.png">
+    <img src="monitex_cropped_r.png" alt="Monitex">
   </div>
-  <div class="login-card">
-      <div class = "login-image">
-    <img src ="smart_home3.png">
-  </div>
+  <div class="login-card" [class.is-loading]="submitting">
+    @if (submitting) {
+      <div class="auth-loading-overlay" aria-live="polite" aria-busy="true">
+        <div class="auth-spinner"></div>
+        <p>Signing you in...</p>
+      </div>
+    }
+
+    <div class="login-image">
+      <img src="smart_home3.png" alt="">
+    </div>
 
     <div class="login-form">
       <h2>Welcome Back</h2>
 
       <div class="input-group">
-        <input type="email" placeholder=" " required [(ngModel)]="email">
+        <input type="email" placeholder=" " required [(ngModel)]="email" name="email" [disabled]="submitting" autocomplete="email">
         <label>Email</label>
       </div>
 
       <div class="input-group">
-        <input type="password" placeholder=" " required [(ngModel)]="password">
+        <input type="password" placeholder=" " required [(ngModel)]="password" name="password" [disabled]="submitting" autocomplete="current-password">
         <label>Password</label>
       </div>
       <div class="options">
         <label>
-          <input type="checkbox" class ="">
-          <span class="checkmark"><i class="fa-utility-duo fa-s`emibold fa-circle-check"></i></span>
+          <input type="checkbox" [disabled]="submitting">
+          <span class="checkmark"><i class="fa-utility-duo fa-semibold fa-circle-check"></i></span>
           Remember Me
         </label>
         <a href="#">Forget Password?</a>
       </div>
-      <button class = "login-btn" (click)="login()">Login</button>
+      <button class="login-btn" type="button" (click)="login()" [disabled]="submitting">
+        @if (submitting) {
+          <span class="btn-spinner"></span>
+          Signing in...
+        } @else {
+          Login
+        }
+      </button>
       <app-divider [message]="'OR Login With'"></app-divider>
       <div class="social-login">
-        <button class="social-btn google">
+        <button class="social-btn google" type="button" [disabled]="submitting">
           <i class="fab fa-google"></i>
         </button>
 
-        <button class="social-btn github">
+        <button class="social-btn github" type="button" [disabled]="submitting">
           <i class="fab fa-github"></i>
         </button>
-        <button class="social-btn microsoft">
-          <i class="fab fa-microsoft">
-          </i>
+        <button class="social-btn microsoft" type="button" [disabled]="submitting">
+          <i class="fab fa-microsoft"></i>
         </button>
       </div>
       <div class="register-link">
         <span>Don't have an account?</span>
-        <a href="#">Register</a>
+        <a href="/register" routerLink="/register" (click)="goToRegister($event)">Register</a>
       </div>
-
     </div>
   </div>
 </section>

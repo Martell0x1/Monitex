@@ -1,55 +1,73 @@
-<section class = "register">
-  <div class = "header">
-    <img src ="monitex_cropped_r.png">
+<section class="register">
+  <app-notification></app-notification>
+  <div class="header">
+    <img src="monitex_cropped_r.png" alt="Monitex">
   </div>
 
-  <div class = "register-card">
-    <div class = "register-image">
-      <img src = "smart_home3.png">
+  <div class="register-card" [class.is-loading]="submitting">
+    @if (submitting) {
+      <div class="auth-loading-overlay" aria-live="polite" aria-busy="true">
+        <div class="auth-spinner"></div>
+        <p>Creating your account...</p>
+      </div>
+    }
+
+    <div class="register-image">
+      <img src="smart_home3.png" alt="">
     </div>
     <div class="login-form">
       <h2>Register New Account</h2>
+
       <div class="input-group">
-        <input type="text" required placeholder=" ">
+        <input type="text" required placeholder=" " [(ngModel)]="username" name="username" autocomplete="username" [disabled]="submitting">
         <label>Username</label>
       </div>
-            <div class="input-group">
-        <input type="text" required placeholder=" ">
+
+      <div class="input-group">
+        <input type="email" required placeholder=" " [(ngModel)]="email" name="email" autocomplete="email" [disabled]="submitting">
         <label>Email</label>
       </div>
-            <div class="input-group">
-        <input type="text" required placeholder=" ">
-        <label>Address</label>
-      </div>
-            <div class="input-group">
-        <input type="text" required placeholder=" ">
-        <label>Phone Number</label>
-      </div>
-            <div class="input-group">
-        <input type="text" required placeholder=" ">
+
+      <div class="input-group">
+        <input type="password" required placeholder=" " [(ngModel)]="password" name="password" autocomplete="new-password" [disabled]="submitting">
         <label>Create Password</label>
       </div>
-            <div class="input-group">
-        <input type="text" required placeholder=" ">
+
+      <div class="input-group">
+        <input type="password" required placeholder=" " [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" [disabled]="submitting">
         <label>Confirm Password</label>
       </div>
-      <div class="options">
 
-      </div>
-      <button class = "register-btn">Confirm</button>
+      <p class="password-hint">
+        Password must start with an uppercase letter, be at least 8 characters, and include a number and a special character.
+      </p>
+
+      <button class="register-btn" type="button" (click)="register()" [disabled]="submitting">
+        @if (submitting) {
+          <span class="btn-spinner"></span>
+          Creating account...
+        } @else {
+          Confirm
+        }
+      </button>
+
       <app-divider [message]="'or register with'"></app-divider>
-            <div class="social-login">
-        <button class="social-btn google">
+
+      <div class="social-login">
+        <button class="social-btn google" type="button" [disabled]="submitting">
           <i class="fab fa-google"></i>
         </button>
-
-        <button class="social-btn github">
+        <button class="social-btn github" type="button" [disabled]="submitting">
           <i class="fab fa-github"></i>
         </button>
-        <button class="social-btn microsoft">
-          <i class="fab fa-microsoft">
-          </i>
+        <button class="social-btn microsoft" type="button" [disabled]="submitting">
+          <i class="fab fa-microsoft"></i>
         </button>
+      </div>
+
+      <div class="login-link">
+        <span>Already have an account?</span>
+        <a href="/login" routerLink="/login" (click)="goToLogin($event)">Login</a>
       </div>
     </div>
   </div>

@@ -59,6 +59,26 @@
   gap: 8px;
 }
 
+.account-card {
+  grid-column: 1 / -1;
+}
+
+.logout-btn {
+  margin-top: 18px;
+  padding: 12px 18px;
+  border: 1px solid rgba(244, 162, 97, 0.55);
+  border-radius: 14px;
+  background: transparent;
+  color: #f4a261;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(244, 162, 97, 0.12);
+}
+
 @media (max-width: 1180px) {
   .settings-layout {
     grid-template-columns: 1fr;

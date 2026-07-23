@@ -6,12 +6,13 @@ namespace SmartHome.Services;
 
 public class MQTTService
 {
-  private  MosquittoConfig _config;
-  private  ILogger<MQTTService> _logger;
+  private readonly MosquittoConfig _config;
+  private readonly ILogger<MQTTService> _logger;
+  private IMqttClient? _client;
 
-  public event Func<string,Task>? OnMessageRecieved;
+  public event Func<string, Task>? OnMessageRecieved;
 
-  public MQTTService(MosquittoConfig config , ILogger<MQTTService> logger)
+  public MQTTService(MosquittoConfig config, ILogger<MQTTService> logger)
   {
     _config = config;
     _logger = logger;
@@ -19,19 +20,18 @@ public class MQTTService
 
   public async Task Listen()
   {
-    var client = await _config.Config();
+    _client = await _config.Config();
 
-    client.ApplicationMessageReceivedAsync += async e =>
+    _client.ApplicationMessageReceivedAsync += async e =>
     {
       var topic = e.ApplicationMessage.Topic;
       var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-      _logger.LogInformation($"Message Recieved From Topic [{topic}]:{payload}");
+      _logger.LogInformation("Message Recieved From Topic [{Topic}]:{Payload}", topic, payload);
 
-      if(OnMessageRecieved != null)
+      if (OnMessageRecieved != null)
+      {
         await OnMessageRecieved(payload);
-
+      }
     };
   }
-
-
 }

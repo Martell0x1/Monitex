@@ -22,7 +22,8 @@ public class UserService : IUserService
             Email = dto.Email,
             Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
         };
-        await _IUserRepository.CreateUser(user);
+        var userId = await _IUserRepository.CreateUser(user);
+        user.Id = userId;
         return user;
     }
 

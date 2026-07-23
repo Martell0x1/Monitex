@@ -1,44 +1,90 @@
 <section class="device-register">
+  <app-notification></app-notification>
 
-    <div class="logo">
-      <img src="monitex_cropped_r.png">
-    </div>
-  <div class="register-card">
+  <div class="logo page-enter">
+    <img src="monitex_cropped_r.png" alt="Monitex">
+  </div>
 
+  <div class="register-card page-enter" [class.is-loading]="submitting">
+    @if (submitting) {
+      <div class="auth-loading-overlay" aria-live="polite" aria-busy="true">
+        <div class="auth-spinner"></div>
+        <p>Registering device...</p>
+      </div>
+    }
 
-    <div class="register-form">
-
+    <form class="register-form" (ngSubmit)="registerDevice()">
       <h2>Add Your New Device</h2>
 
       <div class="input-group">
-        <input type="text" placeholder=" " required>
+        <input
+          type="text"
+          placeholder=" "
+          required
+          name="deviceName"
+          [(ngModel)]="deviceName"
+          [disabled]="submitting"
+          autocomplete="off"
+        >
         <label>Device Name</label>
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder=" ">
+        <input
+          type="text"
+          placeholder=" "
+          name="deviceType"
+          [(ngModel)]="deviceType"
+          [disabled]="submitting"
+        >
         <label>Device Type (Sensor / Camera / Switch)</label>
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder=" ">
+        <input
+          type="text"
+          placeholder=" "
+          name="location"
+          [(ngModel)]="location"
+          [disabled]="submitting"
+        >
         <label>Location (Living Room, Kitchen...)</label>
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder=" ">
+        <input
+          type="text"
+          placeholder=" "
+          name="ipAddress"
+          [(ngModel)]="ipAddress"
+          [disabled]="submitting"
+        >
         <label>IP Address (Optional)</label>
       </div>
 
       <div class="input-group">
-        <input type="text" placeholder=" ">
+        <input
+          type="text"
+          placeholder=" "
+          name="description"
+          [(ngModel)]="description"
+          [disabled]="submitting"
+        >
         <label>Description</label>
       </div>
 
-      <button class="register-btn">
-        Register Device
-      </button>
+      <p class="field-hint">
+        The device name is required and will be registered with the Monitex backend.
+      </p>
 
-    </div>
+      <button class="register-btn" type="submit" [disabled]="submitting">
+        @if (submitting) {
+          <span class="btn-spinner"></span>
+          Registering...
+        } @else {
+          Register Device
+        }
+      </button>
+    </form>
   </div>
 </section>

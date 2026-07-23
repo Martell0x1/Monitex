@@ -125,6 +125,52 @@ generate_data() {
         "$DEVICE" "$TIMESTAMP" "$IP_ADDRESS" "$UPTIME" "$WIFI" "$HEAP" "$MIN_HEAP" "$REASON" "$MQTT" "$SENSOR_OK")
 }
 
+
+########################################
+# Dependency Installer
+########################################
+install_mosquitto_clients() {
+    echo -e "${CYAN}Installing mosquitto clients...${NC}"
+
+    if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update
+        sudo apt-get install -y mosquitto-clients
+
+    elif command -v dnf >/dev/null 2>&1; then
+        sudo dnf install -y mosquitto
+
+    elif command -v yum >/dev/null 2>&1; then
+        sudo yum install -y mosquitto
+
+    elif command -v pacman >/dev/null 2>&1; then
+        sudo pacman -Sy --noconfirm mosquitto
+
+    elif command -v zypper >/dev/null 2>&1; then
+        sudo zypper --non-interactive install mosquitto-clients
+
+    elif command -v apk >/dev/null 2>&1; then
+        sudo apk add mosquitto-clients
+
+    else
+        echo -e "${RED}Unsupported package manager.${NC}"
+        echo "Please install mosquitto-clients manually."
+        exit 1
+    fi
+
+    if ! command -v mosquitto_pub >/dev/null 2>&1; then
+        echo -e "${RED}Installation failed. 'mosquitto_pub' still not found.${NC}"
+        exit 1
+    fi
+
+    echo -e "${TEAL}✓ mosquitto_pub installed successfully.${NC}"
+}
+
+########################################
+# Check Dependencies
+########################################
+if ! command -v mosquitto_pub >/dev/null 2>&1; then
+    install_mosquitto_clients
+fi
 ########################################
 # Execution Loop
 ########################################
@@ -141,8 +187,8 @@ do
     log_status "$COLOR" "$STATE" "Sensor: $VALUE | WiFi: $WIFI dBm | Heap: $HEAP bytes"
 
     # Execute MQTT Pubs (suppressing output)
-    mosquitto_pub -h "$BROKER" -p "$PORT" -t "$TOPIC" -m "$SENSOR_PAYLOAD" 2>/dev/null
-    mosquitto_pub -h "$BROKER" -p "$PORT" -t "$TOPIC" -m "$HEALTH_PAYLOAD" 2>/dev/null
+    mosquitto_pub -h "$BROKER" -p "$PORT" -t "$TOPIC" -m "$SENSOR_PAYLOAD"
+    mosquitto_pub -h "$BROKER" -p "$PORT" -t "$TOPIC" -m "$HEALTH_PAYLOAD"
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}┗━━ ✖ Connection to $BROKER failed!${NC}"

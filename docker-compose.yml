@@ -97,7 +97,7 @@ services:
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=monitex;Username=dbt5user;Password=maro;
       MQTT__Ip: mosquitto
       MQTT__Port: 1883
-      MQTT__Topic: test/topic
+      MQTT__Topic: topic/test
       RabbitMq__Url: amqp://monitex:Maro@rabbitmq:5672/
       RabbitMq__Exchange: iot.sensors.exchange
       RabbitMq__DashboardQueue: iot.sensors.dashboard.queue
@@ -145,6 +145,9 @@ services:
         condition: service_started
     ports:
       - "4200:4200"
+    volumes:
+      - ./Front-Web:/app
+      - frontend_node_modules:/app/node_modules
   nginx:
     image: nginx:alpine
     container_name: monitex-nginx
@@ -164,3 +167,4 @@ volumes:
   rabbitmq-data:
   mosquitto-data:
   mosquitto-log:
+  frontend_node_modules:

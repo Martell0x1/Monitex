@@ -79,7 +79,17 @@ public class AMQPtoAnomalySignalRConsumer : BackgroundService
 
             await _hubContext
                 .Clients
+                .Group(SensorHub.UserGroup(device.User_id.ToString()))
+                .SendAsync("ReceiveAnomalyNotification", payload, stoppingToken);
+
+            await _hubContext
+                .Clients
                 .User(device.User_id.ToString())
+                .SendAsync("ReceiveAnomalyNotification", payload, stoppingToken);
+
+            await _hubContext
+                .Clients
+                .All
                 .SendAsync("ReceiveAnomalyNotification", payload, stoppingToken);
 
             _logger.LogInformation(

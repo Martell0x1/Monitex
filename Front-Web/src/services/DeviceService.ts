@@ -25,13 +25,21 @@ export class DeviceService {
 
     const headers = this.buildHeaders();
     const endpoints = [
-      `${this.apiBase}/devices/user/${userId}`,
       `${this.apiBase}/device/user/${userId}`,
+      `${this.apiBase}/devices/user/${userId}`,
       `${this.apiBase}/users/${userId}/devices`,
       `${this.apiBase}/devices/${userId}`,
     ];
 
     return this.tryEndpoints(endpoints, headers);
+  }
+
+  createDevice(deviceName: string): Observable<any> {
+    return this.http.post(
+      `${this.apiBase}/device/create`,
+      { device_name: deviceName },
+      { headers: this.buildHeaders() }
+    );
   }
 
   private tryEndpoints(
@@ -68,16 +76,38 @@ export class DeviceService {
     return rawDevices
       .filter((device) => device && typeof device === 'object')
       .map((device, index) => ({
-        id: device.id ?? device.deviceId ?? index + 1,
-        name: device.name ?? device.deviceName ?? `Device ${index + 1}`,
-        type: device.type ?? device.deviceType ?? 'Smart Device',
+        id:
+          device.device_id ??
+          device.Device_id ??
+          device.deviceId ??
+          device.DeviceId ??
+          device.id ??
+          index + 1,
+        name:
+          device.device_name ??
+          device.Device_name ??
+          device.deviceName ??
+          device.DeviceName ??
+          device.name ??
+          `Device ${index + 1}`,
+        type: device.type ?? device.deviceType ?? device.DeviceType ?? 'Smart Device',
         location: device.location ?? device.room ?? 'Unknown location',
-        ipAddress: device.ipAddress ?? device.ip ?? 'Unavailable',
+        ipAddress:
+          device.ipAddress ??
+          device.ip_address ??
+          device.IpAddress ??
+          device.ip ??
+          'Unavailable',
         description:
           device.description ??
           device.details ??
           'Live connected smart-home device.',
-        status: device.status ?? device.connectionStatus ?? 'Online',
+        status:
+          device.device_status ??
+          device.Device_status ??
+          device.status ??
+          device.connectionStatus ??
+          'Online',
       }));
   }
 

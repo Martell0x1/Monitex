@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DeviceDto } from '../../DTOs/DeviceDTO';
@@ -310,12 +310,16 @@ export class Dashboard implements OnInit, OnDestroy {
       return;
     }
 
+    const hubUrl = this.resolveSensorHubUrl();
+    this.connectionState = 'Connecting';
+    this.cd.detectChanges();
+
     this.connection = new HubConnectionBuilder()
-      .withUrl('http://monitex.local:5020/sensorHub',{
-        accessTokenFactory: () => token
+      .withUrl(hubUrl, {
+        accessTokenFactory: () => this.authService.getToken() ?? '',
       })
       .configureLogging(LogLevel.Information)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
       .build();
 
     for (const eventName of this.realtimeEventNames) {
@@ -349,19 +353,33 @@ export class Dashboard implements OnInit, OnDestroy {
       this.cd.detectChanges();
     });
 
-    this.connection.onclose(() => {
+    this.connection.onclose((error) => {
+      console.warn('[SignalR] connection closed', error);
       this.restoreRealtimeSnapshot('Sensor reading stopped. The dashboard was restored to its previous state.');
     });
 
     this.connection
       .start()
       .then(() => {
+        console.info('[SignalR] connected', hubUrl);
         this.connectionState = 'Live';
         this.cd.detectChanges();
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('[SignalR] failed to connect', hubUrl, error);
         this.restoreRealtimeSnapshot('Unable to start sensor reading. The dashboard was restored to its previous state.');
       });
+  }
+
+  /** Prefer same-origin /sensorHub (nginx). Fall back to Kestrel :5020 for direct ng serve. */
+  private resolveSensorHubUrl(): string {
+    const { protocol, hostname, port } = window.location;
+
+    if (!port || port === '80' || port === '443') {
+      return '/sensorHub';
+    }
+
+    return `${protocol}//${hostname}:5020/sensorHub`;
   }
 
   ngOnInit(): void {
@@ -488,12 +506,45 @@ export class Dashboard implements OnInit, OnDestroy {
       return;
     }
 
+    console.log('[SignalR] health applied', healthSnapshot);
     this.storeDeviceHealth(healthSnapshot);
     this.syncSelectedDeviceIp({
       deviceId: healthSnapshot.deviceId,
       ipAddress: healthSnapshot.ipAddress,
     });
+
+    // Align selection once if health is for another known device.
+    const healthKeys = [
+      this.normalizeLookupValue(healthSnapshot.deviceId),
+      this.normalizeLookupValue(healthSnapshot.deviceName),
+    ].filter(Boolean);
+    const selectedKeys = this.getSelectedDeviceKeys();
+    const alreadySelected = healthKeys.some((key) => selectedKeys.includes(key));
+
+    if (!alreadySelected) {
+      if (healthSnapshot.deviceName) {
+        this.selectDeviceByLookup(healthSnapshot.deviceName);
+      } else if (healthSnapshot.deviceId) {
+        this.selectDeviceByLookup(healthSnapshot.deviceId);
+      }
+    }
+
+    this.refreshLiveMetricsFromHealth(healthSnapshot);
     this.cd.detectChanges();
+  }
+
+  private refreshLiveMetricsFromHealth(health: DeviceHealthSnapshot): void {
+    // Keep sensor metrics if we already have readings; otherwise show health heartbeat.
+    const hasSensorReading = this.liveSensorReadings.some((reading) => reading.hasLiveValue);
+    if (hasSensorReading) {
+      return;
+    }
+
+    this.liveMetrics = {
+      label: `${health.deviceName || 'Device'} health`,
+      value: `${health.state} · ${health.score}%`,
+      updatedAt: health.updatedAt,
+    };
   }
 
   private processIncomingAnomalyPayload(data: unknown): void {
@@ -1212,6 +1263,11 @@ export class Dashboard implements OnInit, OnDestroy {
     this.clearLiveFeedTimeout();
     this.liveFeedTimeoutId = setTimeout(() => {
       if (!this.hasReceivedRealtimePayload) {
+        return;
+      }
+
+      // Stay live while the SignalR socket is still connected; quiet periods are normal.
+      if (this.connection?.state === HubConnectionState.Connected) {
         return;
       }
 

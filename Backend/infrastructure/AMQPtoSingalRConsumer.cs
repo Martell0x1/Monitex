@@ -83,7 +83,14 @@ public class AMQPtoSignalRConsumer : BackgroundService
                 sensorData.IpAddress
             );
             var device = await deviceRepository.GetDeviceByNameAsync(sensorData.DeviceName);
-            if(device == null) throw new Exception("Null device");
+            if (device == null)
+            {
+                _logger.LogWarning(
+                    "SignalR sensor skipped: no device named '{DeviceName}'. Register that exact device name for your user.",
+                    sensorData.DeviceName
+                );
+                return;
+            }
 
             var userId = device.User_id;
             var sensors = await sensorRepository.GetSensorsByDeviceAsync(device.Device_id);
@@ -103,22 +110,17 @@ public class AMQPtoSignalRConsumer : BackgroundService
 
             _logger.Log(
                 LogLevel.Information,
-                "SignalR mapped device {DeviceId}/{DeviceName} sensor {SensorId}/{SensorName} type {SensorType} value {Value}",
+                "SignalR mapped device {DeviceId}/{DeviceName} sensor {SensorId}/{SensorName} type {SensorType} value {Value} -> user {UserId}",
                 hubPayload.DeviceId,
                 hubPayload.DeviceName,
                 hubPayload.SensorId,
                 hubPayload.SensorName,
                 hubPayload.SensorType,
-                hubPayload.Value
+                hubPayload.Value,
+                userId
             );
 
-            await _hubContext
-                .Clients
-                .User(userId.ToString())
-                .SendAsync(
-                    "ReceiveSensorData",
-                    hubPayload
-                );
+            await PublishToUserAsync(userId.ToString(), "ReceiveSensorData", hubPayload);
         };
 
         await _channel.BasicConsumeAsync(
@@ -146,7 +148,13 @@ public class AMQPtoSignalRConsumer : BackgroundService
 
         var device = await deviceRepository.GetDeviceByNameAsync(heartbeat.DeviceName);
         if (device == null)
-            throw new Exception("Null device");
+        {
+            _logger.LogWarning(
+                "SignalR health skipped: no device named '{DeviceName}'. Register that exact device name for your user.",
+                heartbeat.DeviceName
+            );
+            return;
+        }
 
         var healthPayload = _deviceHealthService.Evaluate(
             device.Device_id,
@@ -156,19 +164,33 @@ public class AMQPtoSignalRConsumer : BackgroundService
 
         _logger.Log(
             LogLevel.Information,
-            "Device health evaluated for {DeviceName}: {Score} {State}",
+            "Device health evaluated for {DeviceName}: {Score} {State} -> user {UserId}",
             healthPayload.DeviceName,
             healthPayload.Score,
-            healthPayload.State
+            healthPayload.State,
+            device.User_id
         );
 
-        await _hubContext
-            .Clients
-            .User(device.User_id.ToString())
-            .SendAsync(
-                "ReceiveDeviceHealth",
-                healthPayload
-            );
+        await PublishToUserAsync(device.User_id.ToString(), "ReceiveDeviceHealth", healthPayload);
+    }
+
+    private async Task PublishToUserAsync(string userId, string method, object payload)
+    {
+        var group = SensorHub.UserGroup(userId);
+        _logger.LogInformation(
+            "Publishing SignalR {Method} to group {Group}, user {UserId}, and all connections",
+            method,
+            group,
+            userId
+        );
+
+        // Group + User for correct multi-user targeting.
+        await _hubContext.Clients.Group(group).SendAsync(method, payload);
+        await _hubContext.Clients.User(userId).SendAsync(method, payload);
+
+        // Also broadcast so a Live dashboard still updates if JWT user-id
+        // mapping failed on the hub connection (common with nameid/userId claims).
+        await _hubContext.Clients.All.SendAsync(method, payload);
     }
 
     private static SmartHome.Model.Sensor? MatchSensor(

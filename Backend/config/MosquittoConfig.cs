@@ -29,8 +29,12 @@ public class MosquittoConfig : ISmartHomeConfig
     await client.ConnectAsync(options);
     _logger.LogInformation("Connected To Mqtt !");
 
-    await client.SubscribeAsync("topic/test");
-    _logger.LogInformation("Subscribed to topic test/topic");
+    var topic = string.IsNullOrWhiteSpace(_settings.Topic)
+      ? "topic/test"
+      : _settings.Topic;
+
+    await client.SubscribeAsync(topic);
+    _logger.LogInformation("Subscribed to topic {Topic}", topic);
 
     return client;
   }

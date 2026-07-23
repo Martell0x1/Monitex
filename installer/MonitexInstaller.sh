@@ -2,6 +2,9 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
+
 ########################################
 # Neon-Pastel Color Palette
 ########################################
@@ -100,9 +103,33 @@ detect_distro() {
 # Hostname
 ########################################
 
+install_hostname_command(){
+    case "$DISTRO" in 
+        debian)
+            sudo apt update > /dev/null
+            sudo apt install inetutils > /dev/null
+            ;;
+        arch)
+            sudo -Sy --noconfirm inetutils > /dev/null
+            ;;
+        fedora)
+            sudo dnf install -y inetutils > /dev/null
+            ;;
+    esac
+    log "Success inetutils insatlled"
+
+}
+
 setup_hostname() {
     step "Network Identity"
-    CURRENT=$(hostname)
+
+    # Ensure hostnamectl is available
+    if ! command -v hostnamectl >/dev/null 2>&1; then
+        log "hostnamectl not found. Installing..."
+        install_hostname_command
+    fi
+
+    CURRENT=$(hostnamectl | grep "Static hostname" | grep -oP ":\s*\K.*")
 
     if [ "$CURRENT" != "monitex" ]; then
         log "Updating system hostname..."
@@ -111,7 +138,6 @@ setup_hostname() {
 
     success "Node identity set to 'monitex'"
 }
-
 ########################################
 # Install Avahi
 ########################################
@@ -191,25 +217,32 @@ check_compose() {
 ########################################
 deploy_stack() {
     step "Stack Deployment"
-    
-    cd ../ 
 
-    RUNNING=$(docker compose ps --services --filter "status=running" 2>/dev/null | wc -l)
-    EXISTING=$(docker compose ps --services 2>/dev/null | wc -l)
+    cd "$REPO_DIR"
 
-    if [ "$EXISTING" -eq 0 ]; then
-        log "Initializing fresh stack..."
+    # Services defined in docker-compose.yml
+    mapfile -t expected_services < <(docker compose config --services)
+
+    # Currently running services
+    mapfile -t running_services < <(docker compose ps --status running --services)
+
+    missing_services=()
+
+    for service in "${expected_services[@]}"; do
+        if ! printf '%s\n' "${running_services[@]}" | grep -qx "$service"; then
+            missing_services+=("$service")
+        fi
+    done
+
+    if [ ${#missing_services[@]} -eq 0 ]; then
+        success "All services are running"
+    else
+        log "Missing/stopped services: ${missing_services[*]}"
+        log "Deploying Monitex stack..."
         docker compose up --build -d
         success "Monitex stack deployed"
-    elif [ "$RUNNING" -eq "$EXISTING" ]; then
-        success "All services running perfectly"
-    else
-        log "Restarting dormant services..."
-        docker compose up -d
-        success "Stack synchronized"
     fi
 }
-
 ########################################
 # Simulator
 ########################################
@@ -315,20 +348,160 @@ health_check() {
 }
 
 ########################################
+# Remove stack (containers + images)
+########################################
+
+remove_stack() {
+    step "Stack Teardown"
+
+    if ! command -v docker >/dev/null 2>&1; then
+        error "Docker is not installed"
+        return 1
+    fi
+
+    if ! docker compose version >/dev/null 2>&1; then
+        error "Compose V2 is missing"
+        return 1
+    fi
+
+    cd "$REPO_DIR"
+
+    if [ ! -f "$REPO_DIR/docker-compose.yml" ]; then
+        error "docker-compose.yml not found in ${BOLD}$REPO_DIR${NC}"
+        return 1
+    fi
+
+    echo -e "\n  ${DIM}This will stop and remove:${NC}"
+    echo -e "  ${PINK}•${NC} All Monitex compose containers"
+    echo -e "  ${PINK}•${NC} Their associated Docker images"
+    echo -e "  ${DIM}Volumes and host data are left untouched.${NC}"
+    echo ""
+    read -rp "  Confirm teardown (y/N) > " confirm
+
+    case "$confirm" in
+        y|Y|yes|YES)
+            ;;
+        *)
+            warn "Teardown cancelled"
+            return 0
+            ;;
+    esac
+
+    mapfile -t services < <(docker compose config --services 2>/dev/null || true)
+    mapfile -t images < <(docker compose config --images 2>/dev/null || true)
+    mapfile -t running < <(docker compose ps -q 2>/dev/null || true)
+
+    if [ ${#services[@]} -gt 0 ]; then
+        log "Compose services: ${BOLD}${services[*]}${NC}"
+    fi
+
+    if [ ${#images[@]} -gt 0 ]; then
+        log "Tracked images:"
+        for img in "${images[@]}"; do
+            echo -e "  ${DIM}→${NC} $img"
+        done
+    fi
+
+    if [ ${#running[@]} -eq 0 ]; then
+        warn "No Monitex containers currently running"
+    else
+        log "Stopping ${BOLD}${#running[@]}${NC} container(s)..."
+    fi
+
+    log "Removing containers, networks, and images..."
+    if docker compose down --rmi all --remove-orphans; then
+        success "Compose stack removed"
+    else
+        error "Compose teardown reported errors"
+        return 1
+    fi
+
+    # Clean leftover monitex-* containers (stopped or orphaned)
+    mapfile -t leftover < <(docker ps -aq --filter "name=monitex-" 2>/dev/null || true)
+    if [ ${#leftover[@]} -gt 0 ]; then
+        log "Removing leftover monitex containers..."
+        docker rm -f "${leftover[@]}" >/dev/null 2>&1 || true
+        success "Leftover containers cleared"
+    fi
+
+    # Remove any remaining images that still match compose image refs
+    removed_images=0
+    for img in "${images[@]}"; do
+        if docker image inspect "$img" >/dev/null 2>&1; then
+            log "Removing image ${BOLD}$img${NC}..."
+            if docker rmi -f "$img" >/dev/null 2>&1; then
+                removed_images=$((removed_images + 1))
+            else
+                warn "Could not remove image: $img"
+            fi
+        fi
+    done
+
+    if [ "$removed_images" -gt 0 ]; then
+        success "Removed ${BOLD}$removed_images${NC} remaining image(s)"
+    fi
+
+    success "Monitex containers and images purged"
+}
+
+########################################
+# Install flow
+########################################
+
+install_flow() {
+    detect_distro
+    setup_hostname
+    install_avahi
+    install_docker
+    check_compose
+    deploy_stack
+    edge_mode
+    health_check
+
+    echo -e "\n${DIM}───────────────────────────────────────────────${NC}"
+    echo -e "${TEAL}${BOLD}  Setup Complete!${NC}"
+    echo -e "  Dashboard Available at: ${BOLD}${CYAN}http://monitex.local${NC}"
+    echo -e "${DIM}───────────────────────────────────────────────${NC}\n"
+}
+
+########################################
+# Main menu
+########################################
+
+main_menu() {
+    echo -e "${BOLD}${CYAN}◆ Main Menu${NC}"
+    echo -e "  ${PINK}1)${NC} Install / Deploy Monitex"
+    echo -e "  ${PINK}2)${NC} Remove Monitex containers & images"
+    echo -e "  ${PINK}3)${NC} Exit"
+    echo ""
+    read -rp "  Select > " choice
+
+    case "$choice" in
+        1)
+            install_flow
+            ;;
+        2)
+            remove_stack
+            echo -e "\n${DIM}───────────────────────────────────────────────${NC}"
+            echo -e "${TEAL}${BOLD}  Teardown Complete${NC}"
+            echo -e "  Run option ${BOLD}1${NC} again to redeploy the stack."
+            echo -e "${DIM}───────────────────────────────────────────────${NC}\n"
+            ;;
+        3)
+            success "Exiting installer"
+            exit 0
+            ;;
+        *)
+            warn "Invalid choice"
+            echo ""
+            main_menu
+            ;;
+    esac
+}
+
+########################################
 # MAIN
 ########################################
 
 banner
-detect_distro
-setup_hostname
-install_avahi
-install_docker
-check_compose
-deploy_stack
-edge_mode
-health_check
-
-echo -e "\n${DIM}───────────────────────────────────────────────${NC}"
-echo -e "${TEAL}${BOLD}  Setup Complete!${NC}"
-echo -e "  Dashboard Available at: ${BOLD}${CYAN}http://monitex.local${NC}"
-echo -e "${DIM}───────────────────────────────────────────────${NC}\n"
+main_menu

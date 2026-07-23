@@ -19,16 +19,24 @@ public class DeviceController : ControllerBase
   [HttpPost("create")]
   public async Task<IActionResult> Create_Device([FromBody] CreateDeviceDTO body)
   {
-    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+    var userIdClaim = User.FindFirst("userId")?.Value
+                   ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                   ?? User.FindFirst("nameid")?.Value
                    ?? User.FindFirst("sub")?.Value;
 
-    if (!int.TryParse(userIdClaim, out var userId))
+    if (!int.TryParse(userIdClaim, out var userId) || userId <= 0)
         return Unauthorized(new { message = "Invalid user token" });
 
-    var result = await _Service.CreateDeviceAsync(body,userId);
-    if(result == null)
-      return Conflict(new{message="Failed To Register a new device"});
-    return Ok(new{message="Device Created Succefully",name=body.Device_name});
+    var result = await _Service.CreateDeviceAsync(body, userId);
+    if (result <= 0)
+      return Conflict(new { message = "Failed To Register a new device" });
+
+    return Ok(new
+    {
+      message = "Device Created Succefully",
+      name = body.Device_name,
+      deviceId = result
+    });
   }
 
   [HttpGet("user/{id}")]

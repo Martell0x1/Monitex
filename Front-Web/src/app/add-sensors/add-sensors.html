@@ -1,57 +1,112 @@
 <section class="device-register">
-  <div class="logo">
-    <img src="monitex_cropped_r.png" />
+  <app-notification></app-notification>
+
+  <div class="logo page-enter">
+    <img src="monitex_cropped_r.png" alt="Monitex" />
   </div>
 
-  <div class="register-card">
+  <div class="register-card page-enter" [class.is-loading]="submitting">
+    @if (submitting) {
+      <div class="auth-loading-overlay" aria-live="polite" aria-busy="true">
+        <div class="auth-spinner"></div>
+        <p>Registering sensors...</p>
+      </div>
+    }
+
     <form class="register-form" (ngSubmit)="registerSensors()">
       <h2>Add Your Sensors</h2>
 
       <div class="sensor-list">
         @for (sensor of sensors; track $index; let i = $index) {
-          <div class="sensor-block">
+          <div class="sensor-block sensor-enter">
             <div class="sensor-header">
               <h3>Sensor {{ i + 1 }}</h3>
               <button
                 type="button"
                 class="remove-btn"
                 (click)="removeSensor(i)"
-                [disabled]="sensors.length === 1"
+                [disabled]="sensors.length === 1 || submitting"
               >
                 Remove
               </button>
             </div>
 
             <div class="input-group">
-              <input type="text" placeholder=" " required [(ngModel)]="sensor.name" [name]="'name-' + i" />
+              <input
+                type="text"
+                placeholder=" "
+                required
+                [(ngModel)]="sensor.name"
+                [name]="'name-' + i"
+                [disabled]="submitting"
+              />
               <label>Sensor Name</label>
             </div>
 
             <div class="input-group">
-              <input type="text" placeholder=" " [(ngModel)]="sensor.type" [name]="'type-' + i" />
+              <input
+                type="text"
+                placeholder=" "
+                [(ngModel)]="sensor.type"
+                [name]="'type-' + i"
+                [disabled]="submitting"
+              />
               <label>Sensor Type (Temperature / Motion / Humidity)</label>
             </div>
 
             <div class="input-group">
-              <input type="text" placeholder=" " [(ngModel)]="sensor.location" [name]="'location-' + i" />
+              <input
+                type="text"
+                placeholder=" "
+                [(ngModel)]="sensor.location"
+                [name]="'location-' + i"
+                [disabled]="submitting"
+              />
               <label>Location (Living Room, Kitchen...)</label>
             </div>
 
             <div class="input-group">
-              <input type="text" placeholder=" " [(ngModel)]="sensor.ipAddress" [name]="'ip-' + i" />
+              <input
+                type="text"
+                placeholder=" "
+                [(ngModel)]="sensor.ipAddress"
+                [name]="'ip-' + i"
+                [disabled]="submitting"
+              />
               <label>IP Address (Optional)</label>
             </div>
 
             <div class="input-group">
-              <input type="text" placeholder=" " [(ngModel)]="sensor.description" [name]="'description-' + i" />
+              <input
+                type="text"
+                placeholder=" "
+                [(ngModel)]="sensor.description"
+                [name]="'description-' + i"
+                [disabled]="submitting"
+              />
               <label>Description</label>
             </div>
           </div>
         }
       </div>
 
-      <button type="button" class="secondary-btn" (click)="addSensor()">+ Add Sensor</button>
-      <button type="submit" class="register-btn">Register Sensors</button>
+      <button
+        type="button"
+        class="secondary-btn"
+        (click)="addSensor()"
+        [disabled]="submitting"
+      >
+        + Add Sensor
+      </button>
+
+      <button type="submit" class="register-btn" [disabled]="submitting">
+        @if (submitting) {
+          <span class="btn-spinner"></span>
+          Registering...
+        } @else {
+          Register Sensors
+        }
+      </button>
     </form>
   </div>
 </section>

@@ -11,6 +11,7 @@
 
 .logo {
   display: flex;
+  margin-bottom: 10px;
 }
 
 .register-card {
@@ -18,9 +19,29 @@
   background-color: #424769;
   border-radius: 20px;
   display: flex;
+  position: relative;
+  overflow: hidden;
   box-shadow:
     rgba(0, 0, 0, 0.16) 0px 10px 36px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.register-card.is-loading .register-form {
+  pointer-events: none;
+  filter: blur(1px);
+  opacity: 0.55;
+}
+
+.page-enter {
+  animation: page-rise 0.45s ease both;
+}
+
+.logo.page-enter {
+  animation-delay: 0.05s;
+}
+
+.register-card.page-enter {
+  animation-delay: 0.12s;
 }
 
 .register-form {
@@ -33,6 +54,7 @@
 
 .register-form h2 {
   color: white;
+  margin: 0;
 }
 
 .sensor-list {
@@ -52,6 +74,10 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.sensor-enter {
+  animation: sensor-pop 0.35s ease both;
 }
 
 .sensor-header {
@@ -77,6 +103,7 @@
   border: none;
   color: white;
   font-size: 14px;
+  transition: 0.3s ease;
 }
 
 .input-group label {
@@ -85,6 +112,7 @@
   top: 16px;
   color: #a0a7c0;
   transition: 0.3s ease;
+  pointer-events: none;
 }
 
 .input-group input:focus + label,
@@ -102,6 +130,11 @@
   transform: scale(1.01, 1.08);
 }
 
+.input-group input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .register-btn,
 .secondary-btn,
 .remove-btn {
@@ -117,11 +150,22 @@
   background-color: #f4a261;
   color: #2f3552;
   box-shadow: 0 5px 15px rgba(244, 162, 97, 0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.register-btn:hover {
+.register-btn:hover:not(:disabled) {
   background-color: #ffb870;
   box-shadow: 0 8px 20px rgba(244, 162, 97, 0.6);
+}
+
+.register-btn:disabled,
+.secondary-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .secondary-btn {
@@ -129,7 +173,7 @@
   color: #fff;
 }
 
-.secondary-btn:hover {
+.secondary-btn:hover:not(:disabled) {
   background-color: #93a0df;
 }
 
@@ -142,6 +186,82 @@
 .remove-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.auth-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(23, 30, 53, 0.72);
+  backdrop-filter: blur(4px);
+  color: #f8fafc;
+  animation: auth-fade-in 0.2s ease;
+}
+
+.auth-loading-overlay p {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: #e2e8f0;
+}
+
+.auth-spinner,
+.btn-spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid rgba(244, 162, 97, 0.25);
+  border-top-color: #f4a261;
+  animation: auth-spin 0.75s linear infinite;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+  flex-shrink: 0;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes auth-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sensor-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (max-width: 768px) {

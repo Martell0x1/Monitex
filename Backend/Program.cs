@@ -13,6 +13,7 @@ using SmartHome.Settings;
 var builder = WebApplication.CreateBuilder(args);
 
 #region WebSockets SignalR Configs
+builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, MonitexUserIdProvider>();
 builder.Services.AddSignalR();
 #endregion
 
@@ -62,12 +63,16 @@ builder.Services.AddAuthentication(ops =>
 })
 .AddJwtBearer(ops =>
 {
+    // Keep JWT claim type names as issued (userId / nameid / sub).
+    ops.MapInboundClaims = false;
     ops.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+        NameClaimType = "userId",
+        RoleClaimType = "role",
 
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
@@ -102,23 +107,13 @@ builder.Services.AddControllers();
 #region CORS configuration
 builder.Services.AddCors(opts =>
 {
-  opts.AddPolicy("AllowAngular", policy =>
+  opts.AddPolicy("AllowDashboard", policy =>
   {
-    policy.WithOrigins("*")
-      .AllowAnyHeader()
-      .AllowAnyMethod();
-  });
-
-  opts.AddPolicy("AllowDashboard",policy =>
-  {
-    policy.WithOrigins("http://monitex.local:4200")
-      .AllowAnyHeader()
-      .AllowAnyMethod()
-      .AllowCredentials();
-  });
-  opts.AddPolicy("AllowDashboard",policy =>
-  {
-    policy.WithOrigins("http://monitex.local")
+    policy.WithOrigins(
+        "http://monitex.local",
+        "http://monitex.local:4200",
+        "http://localhost:4200",
+        "http://localhost:5020")
       .AllowAnyHeader()
       .AllowAnyMethod()
       .AllowCredentials();
@@ -153,13 +148,11 @@ bridge.start();
 #endregion
 
 app.UseCors("AllowDashboard");
-app.UseCors("AllowAngular");
-
-app.MapHub<SensorHub>("/sensorHub");
-
 app.UseHttpsRedirection();
 app.UseRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<SensorHub>("/sensorHub");
 app.MapControllers();
 app.Run();
