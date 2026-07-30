@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using SmartHome.Config;
 using SmartHome.Data;
 using SmartHome.Data.Repositories;
@@ -56,10 +58,16 @@ builder.Services.AddSingleton<DeviceHealthService>();
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["key"]);
 
-builder.Services.AddAuthentication(ops =>
+builder.Services.AddAuthentication(options =>
 {
-   ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-   ops.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
+    options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
 })
 .AddJwtBearer(ops =>
 {

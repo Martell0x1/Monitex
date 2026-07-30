@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +39,41 @@ public class AuthService : IAuthService
         var userId = user.Id;
         return GenerateJWTtoken(userId, user.Username, user.Email, false,false);
     }
+    public async Task<AuthResponseDto?> LoginWithGoogleAsync(HttpContext context)
+{
+    var result = await context.AuthenticateAsync();
+
+    if (!result.Succeeded)
+        return null;
+
+    var email = result.Principal?.FindFirst(ClaimTypes.Email)?.Value;
+    var username = result.Principal?.FindFirst(ClaimTypes.Name)?.Value;
+
+    if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(username))
+        return null;
+
+    var user = await _UserService.GetUserByEmailAsync(email);
+
+    if (user == null)
+    {
+        user = await _UserService.CreateGoogleUserAsync(username, email);
+    }
+
+    var deviceCount = await _deviceRepository.GetDevicesCountByUserIdAsync(user.Id) ?? 0;
+    var hasDevices = deviceCount > 0;
+
+    var sensorCount = await _sensorRepository.GetSensorsCountByUserId(user.Id) ?? 0;
+    var hasSensors = sensorCount > 0;
+
+    _logger.LogInformation($"{deviceCount}/{sensorCount}");
+
+    return GenerateJWTtoken(
+        user.Id,
+        user.Username,
+        user.Email,
+        hasDevices,
+        hasSensors);
+}
     public AuthResponseDto GenerateJWTtoken(int userId, string username, string email, bool hasDevices , bool hasSensors)
     {
         var jwtSettings = _config.GetSection("Jwt");

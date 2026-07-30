@@ -10,6 +10,7 @@ public interface IUserService
     public Task<User?> GetUserByEmailAsync(string email);
     public IEnumerable<User> GetAllUsers();
     public Task<User> CreateUserAsync(RegisterDTO dto);
+    public Task<User> CreateGoogleUserAsync(string username, string email);
     public void EditUser(int id , User user);
     public void DeleteUser(int id);
 }

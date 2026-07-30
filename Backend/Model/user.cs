@@ -18,6 +18,10 @@ public class User
     [EmailAddress]
     public string Email {get;set;}
 
+    public string? GoogleId { get; set; }
+
+public string LoginProvider { get; set; } = "Local";
+
     [Required]
     public Home home {get;set;}
 }

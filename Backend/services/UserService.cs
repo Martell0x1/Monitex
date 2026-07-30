@@ -9,21 +9,50 @@ namespace SmartHome.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _IUserRepository;
-    public UserService(IUserRepository repo) => _IUserRepository = repo;
+
+    public UserService(IUserRepository repo)
+    {
+        _IUserRepository = repo;
+    }
+
     public async Task<User> CreateUserAsync(RegisterDTO dto)
     {
-        var existinguser = await _IUserRepository.GetUserByEmailAsync(dto.Email);
-        if(existinguser != null)
+        var existingUser = await _IUserRepository.GetUserByEmailAsync(dto.Email);
+
+        if (existingUser != null)
             return null;
 
         var user = new User
         {
             Username = dto.Username,
             Email = dto.Email,
-            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
+
         var userId = await _IUserRepository.CreateUser(user);
         user.Id = userId;
+
+        return user;
+    }
+
+    // Google OAuth
+    public async Task<User> CreateGoogleUserAsync(string username, string email)
+    {
+        var existingUser = await _IUserRepository.GetUserByEmailAsync(email);
+
+        if (existingUser != null)
+            return existingUser;
+
+        var user = new User
+        {
+            Username = username,
+            Email = email,
+            Password = string.Empty
+        };
+
+        var userId = await _IUserRepository.CreateUser(user);
+        user.Id = userId;
+
         return user;
     }
 
@@ -46,6 +75,7 @@ public class UserService : IUserService
     {
         return await _IUserRepository.GetUserByDeviceIdAsync(id);
     }
+
     public async Task<User?> GetUserByIdAsync(int id)
     {
         return await _IUserRepository.GetUserById(id);
