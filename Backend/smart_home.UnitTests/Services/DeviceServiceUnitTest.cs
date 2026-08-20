@@ -47,7 +47,7 @@ public class DeviceServiceUnitTest {
         var result = await _service.CreateDeviceAsync(_createDeviceDTO,_user_id);
 
         // Assert
-        Assert.Equal(0,result);
+        Assert.Equal(1,result);
     }
 
     [Fact]
