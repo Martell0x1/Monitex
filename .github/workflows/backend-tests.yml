@@ -1,0 +1,32 @@
+name: Run Backend Tests
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore smart_home.UnitTests
+
+      - name: Build
+        run: dotnet build smart_home.UnitTests --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test smart_home.UnitTests --no-build --configuration Release --logger "console;verbosity=normal"
