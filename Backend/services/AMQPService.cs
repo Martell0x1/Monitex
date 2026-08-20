@@ -14,7 +14,7 @@ public class AMQPService
         _config = config;
     }
 
-    public async Task PublishMessage(string message, string routingKey)
+    public virtual async Task PublishMessage(string message, string routingKey)
     {
         _channel ??= await _config.Config();
 
@@ -27,12 +27,12 @@ public class AMQPService
         );
     }
 
-    public Task PublishDashboardMessage(string message)
+    public virtual Task PublishDashboardMessage(string message)
         => PublishMessage(message, _config.GetDashboardRoutingKey());
 
-    public Task PublishInfluxMessage(string message)
+    public virtual Task PublishInfluxMessage(string message)
         => PublishMessage(message, _config.GetInfluxRoutingKey());
 
-    public Task PublishPythonModelMessage(string message)
+    public virtual Task PublishPythonModelMessage(string message)
         => PublishMessage(message, _config.GetPythonModelRoutingKey());
 }

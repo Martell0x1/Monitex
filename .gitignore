@@ -48,3 +48,5 @@ Thumbs.db
 /Backend/bin/
 /Backend/obj/
 /Backend/*.user
+/Backend/smart_home.*/bin
+/Backend/smart_home.*/obj
