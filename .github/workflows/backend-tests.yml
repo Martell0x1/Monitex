@@ -12,6 +12,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+  
+  defaults:
+    run:
+      working-directory: /home/runner/work/Monitex/Monitex/Backend
 
     steps:
       - name: Checkout code
@@ -22,17 +26,11 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Debuging Pwd & ls
-        run: pwd && ls -la
-
-      - name: Changing Directory to Backend Project
-        run: cd /home/runner/work/Monitex/Monitex/Backend
-
       - name: Restore dependencies
-        run: dotnet restore smart_home.UnitTests
+        run: dotnet restore smart_home.UnitTests/smart_home.UnitTests.csproj
 
       - name: Build
-        run: dotnet build smart_home.UnitTests --no-restore --configuration Release
+        run: dotnet build smart_home.UnitTests/smart_home.UnitTests.csproj --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test smart_home.UnitTests --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test smart_home.UnitTests/smart_home.UnitTests.csproj --no-build --configuration Release
