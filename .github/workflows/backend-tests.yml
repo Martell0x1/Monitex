@@ -22,7 +22,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Debug: Pwd & ls
+      - name: Debuging Pwd & ls
         run: pwd && ls -la
 
       - name: Changing Directory to Backend Project
