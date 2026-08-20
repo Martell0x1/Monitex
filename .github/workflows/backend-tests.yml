@@ -22,8 +22,8 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Pwd & ls
-        run: pwd && ls -la
+      - name: Changing Directory to Backend Project
+        run: cd /home/runner/work/Monitex/Monitex/Backend
 
       - name: Restore dependencies
         run: dotnet restore smart_home.UnitTests
