@@ -12,10 +12,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-  
-  defaults:
-    run:
-      working-directory: /home/runner/work/Monitex/Monitex/Backend
+      
+    defaults:
+      run:
+        working-directory: /home/runner/work/Monitex/Monitex/Backend
 
     steps:
       - name: Checkout code
