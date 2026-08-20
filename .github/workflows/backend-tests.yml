@@ -12,7 +12,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-      
+
     defaults:
       run:
         working-directory: /home/runner/work/Monitex/Monitex/Backend
@@ -33,4 +33,4 @@ jobs:
         run: dotnet build smart_home.UnitTests/smart_home.UnitTests.csproj --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test smart_home.UnitTests/smart_home.UnitTests.csproj --no-build --configuration Release
+        run: dotnet test smart_home.UnitTests/smart_home.UnitTests.csproj --no-build --logger "console;verbosity=detailed" --configuration Release
