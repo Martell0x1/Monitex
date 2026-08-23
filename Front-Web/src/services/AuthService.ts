@@ -4,13 +4,14 @@ import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import LoginDto from "../DTOs/LoginDTO";
 import RegiterDTO from "../DTOs/RegisterDTO";
+import { apiUrl } from "../environments/api";
 
 
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
 
-  private api = "/api/auth/";
+  private api = apiUrl("/api/auth/");
   private tokenKey = "monitex_token";
   private userStateKey = "monitex_user_state";
 

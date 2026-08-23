@@ -9,6 +9,7 @@ import { DeviceService } from '../../services/DeviceService';
 import { AuthService } from '../../services/AuthService';
 import { SensorService } from '../../services/SensorService';
 import { NotificationService } from '../../services/NotificationService';
+import { apiUrl } from '../../environments/api';
 
 type LiveSensorCard = {
   sensorKey: string;
@@ -371,15 +372,8 @@ export class Dashboard implements OnInit, OnDestroy {
       });
   }
 
-  /** Prefer same-origin /sensorHub (nginx). Fall back to Kestrel :5020 for direct ng serve. */
   private resolveSensorHubUrl(): string {
-    const { protocol, hostname, port } = window.location;
-
-    if (!port || port === '80' || port === '443') {
-      return '/sensorHub';
-    }
-
-    return `${protocol}//${hostname}:5020/sensorHub`;
+    return apiUrl('/sensorHub');
   }
 
   ngOnInit(): void {

@@ -4,12 +4,13 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DeviceDto } from '../DTOs/DeviceDTO';
 import { AuthService } from './AuthService';
+import { apiUrl } from '../environments/api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DeviceService {
-  private apiBase = '/api';
+  private apiBase = apiUrl('/api');
 
   constructor(
     private http: HttpClient,

@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { SensorDto } from '../DTOs/SensorDTO';
 import { SensorSummaryDto } from '../DTOs/SensorSummaryDTO';
 import { AuthService } from './AuthService';
+import { apiUrl } from '../environments/api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SensorService {
-  private api = '/api/sensors';
+  private api = apiUrl('/api/sensors');
 
   constructor(
     private http: HttpClient,

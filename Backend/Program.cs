@@ -145,16 +145,17 @@ builder.Services.AddControllers();
 #endregion
 
 #region CORS Configuration
-
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy("AllowDashboard", policy =>
     {
-        policy.WithOrigins(
+        policy
+            .WithOrigins(
                 "http://monitex.local",
                 "http://monitex.local:4200",
                 "http://localhost:4200",
-                "http://localhost:5020")
+                "http://localhost:5020"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
