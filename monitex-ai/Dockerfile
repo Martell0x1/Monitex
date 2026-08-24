@@ -10,4 +10,6 @@ COPY . ./
 WORKDIR /app/model
 ENV PYTHONUNBUFFERED=1
 
+EXPOSE 8000
+
 CMD ["python", "rabbitmq_reader_service.py"]

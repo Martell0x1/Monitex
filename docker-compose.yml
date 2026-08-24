@@ -116,7 +116,7 @@ services:
     ports:
       - "5020:5020"
 
-  monitex-ai:
+   monitex-ai:
     build:
       context: ./monitex-ai
       dockerfile: Dockerfile
@@ -133,6 +133,18 @@ services:
       RABBITMQ_EXCHANGE_NAME: iot.sensors.exchange
       ANOMALY_RESULTS_ROUTING_KEY: sensor.anomaly.detected
       ANOMALY_MODEL_PATH: /app/esp32_anomaly_model.joblib
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_ORG: monitex-org
+      INFLUX_BUCKET: monitex
+      INFLUX_TOKEN: E_0cWP_5aLZ6KQKK7y6rPVXvoI1DRF6bf0xVjMrw2JwUCu6McyG4mQe6y629aHh6Q9jNnalYkqq_HTzxDWU7nA==
+      TRAIN_MEASUREMENT: sensor_readings
+      TRAIN_FIELD: value
+      TRAIN_LOOKBACK_RANGE: -7d
+      RETRAIN_SCHEDULER_ENABLED: "true"
+      RETRAIN_INTERVAL_MINUTES: "1440"
+      HEALTH_CHECK_PORT: "8000"
+    ports:
+      - "8091:8000"
 
   frontend:
     build:

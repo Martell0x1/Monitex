@@ -50,3 +50,9 @@ Thumbs.db
 /Backend/*.user
 /Backend/smart_home.*/bin
 /Backend/smart_home.*/obj
+
+monitex-ai/.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+*.joblib.bak

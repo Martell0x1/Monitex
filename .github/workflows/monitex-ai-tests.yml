@@ -1,0 +1,37 @@
+name: Run Monitex AI Tests
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'monitex-ai/**'
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'monitex-ai/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: monitex-ai
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: pytest tests/ -v
