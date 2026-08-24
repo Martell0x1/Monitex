@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
+from config import SEVERITY_SCORE_CRITICAL, SEVERITY_SCORE_WARNING
 from model_runtime import AnomalyModelRuntime
 
 
@@ -62,16 +63,25 @@ def normalize_sensor_payload(payload: dict[str, Any]) -> dict[str, Any] | None:
 def build_anomaly_payload(
     reading: dict[str, Any],
     runtime: AnomalyModelRuntime,
+    score: float | None = None,
 ) -> dict[str, Any]:
     value = float(reading["value"])
-    threshold = runtime.upper_threshold()
-    max_valid = runtime.max_valid_reading()
+    device_name = reading["deviceName"]
+    sensor_type = reading["sensorType"]
 
-    severity = "warning"
+    threshold = runtime.upper_threshold(device_name, sensor_type)
+    max_valid = runtime.max_valid_reading(device_name, sensor_type)
+
     if max_valid is not None and value > max_valid:
         severity = "critical"
     elif threshold is not None and value > threshold:
+        severity = "warning"
+    elif score is not None and score <= SEVERITY_SCORE_CRITICAL:
         severity = "critical"
+    elif score is not None and score <= SEVERITY_SCORE_WARNING:
+        severity = "warning"
+    else:
+        severity = "info"
 
     threshold_label = f"{threshold:.2f}" if threshold is not None else "the expected range"
 
@@ -88,6 +98,7 @@ def build_anomaly_payload(
         ),
         "value": value,
         "threshold": threshold,
+        "anomalyScore": score,
         "ipAddress": reading["ipAddress"],
         "timestamp": reading["timestamp"],
     }

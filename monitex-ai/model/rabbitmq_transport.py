@@ -10,11 +10,15 @@ class RabbitMQAnomalyTransport:
         queue_name: str,
         exchange_name: str,
         results_routing_key: str,
+        retrain_queue_name: str | None = None,
+        retrain_routing_key: str | None = None,
     ) -> None:
         self.rabbitmq_url = rabbitmq_url
         self.queue_name = queue_name
         self.exchange_name = exchange_name
         self.results_routing_key = results_routing_key
+        self.retrain_queue_name = retrain_queue_name
+        self.retrain_routing_key = retrain_routing_key
 
     async def connect(self) -> tuple[aio_pika.abc.AbstractRobustConnection, aio_pika.abc.AbstractChannel]:
         connection = await aio_pika.connect_robust(self.rabbitmq_url)
@@ -27,6 +31,21 @@ class RabbitMQAnomalyTransport:
         channel: aio_pika.abc.AbstractChannel,
     ) -> aio_pika.abc.AbstractQueue:
         return await channel.declare_queue(self.queue_name, durable=True)
+
+    async def declare_retrain_queue(
+        self,
+        channel: aio_pika.abc.AbstractChannel,
+    ) -> aio_pika.abc.AbstractQueue:
+        if not self.retrain_queue_name:
+            raise ValueError("retrain_queue_name was not configured")
+
+        queue = await channel.declare_queue(self.retrain_queue_name, durable=True)
+
+        if self.retrain_routing_key:
+            exchange = await self.get_exchange(channel)
+            await queue.bind(exchange, routing_key=self.retrain_routing_key)
+
+        return queue
 
     async def get_exchange(
         self,
